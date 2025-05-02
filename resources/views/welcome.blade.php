@@ -108,7 +108,7 @@
                 </div>
             @endforeach
         </div>
-        @if(!($Winnaars->empty() && $Verliezers->empty()) )
+        @if($Winnaars->isNotEmpty() && $Verliezers->isNotEmpty())
             <div class="grid auto-rows-min gap-4 grid-cols-1">
                 <div>
                     <h1 class="">Winnaarspoule</h1>

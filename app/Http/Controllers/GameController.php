@@ -41,6 +41,8 @@ class GameController extends Controller
         return redirect('dashboard')->with('success', 'Match updated successfully.');
     }
 
+
+
     public function destroy(Game $game)
     {
         $game->delete();

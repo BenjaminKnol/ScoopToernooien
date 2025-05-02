@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->string('endTime');
             $table->foreignId('team_1_id');
             $table->foreignId('team_2_id');
+            $table->integer('field');
             $table->timestamps();
         });
     }

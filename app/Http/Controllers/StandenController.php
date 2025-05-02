@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Game;
 use App\Models\Team;
 
 class StandenController extends Controller
@@ -32,6 +33,8 @@ class StandenController extends Controller
             $this->updateTeamPoules($teams->take($middleIndex), self::WINNERS_POULE);
             $this->updateTeamPoules($teams->skip($middleIndex), self::LOSERS_POULE);
         }
+
+        Game::destroy(Game::all());
 
         return redirect()->back()->with('success', 'Poules gesplitst, niet nog een keer drukken por favor');
     }

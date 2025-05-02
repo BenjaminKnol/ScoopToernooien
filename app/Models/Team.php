@@ -19,7 +19,9 @@ class Team extends Model
             'A' => $allTeams->where('poule', '=', 'A'),
             'B' => $allTeams->where('poule', '=', 'B'),
             'C' => $allTeams->where('poule', '=', 'C'),
-            'D' => $allTeams->where('poule', '=', 'D')
+            'D' => $allTeams->where('poule', '=', 'D'),
+            'Verliezers' => $allTeams->where('poule', '=', 'Verliezers'),
+            'Winnaars' => $allTeams->where('poule', '=', 'Winnaars'),
         ];
     }
 

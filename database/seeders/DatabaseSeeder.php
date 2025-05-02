@@ -13,8 +13,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
         User::factory()->create([
             'name' => 'Benjamin Knol',
             'email' => 'benjaminknol@shcscoop.nl',
@@ -43,6 +41,9 @@ class DatabaseSeeder extends Seeder
             'name' => 'Rithik Putatunda',
             'email' => 'rithikputatunda@shcscoop.nl',
             'password' => bcrypt('EenOrigineelWachtwoordVoorRithik')
+        ]);
+        $this->call([
+            TeamSeeder::class,
         ]);
     }
 }

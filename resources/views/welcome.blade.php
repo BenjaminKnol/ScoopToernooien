@@ -6,26 +6,21 @@
             </div>
         </div>
         <div class="grid auto-rows-min gap-4 grid-cols-4">
-            <div
-                class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                <x-placeholder-pattern
-                    class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
-            </div>
-            <div
-                class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                <x-placeholder-pattern
-                    class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
-            </div>
-            <div
-                class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                <x-placeholder-pattern
-                    class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
-            </div>
-            <div
-                class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                <x-placeholder-pattern
-                    class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
-            </div>
+            @foreach ($A as $team)
+                <div
+                    class="relative aspect-video overflow-hidden rounded-xl border border-neutral-400 bg-slate-200 dark:border-neutral-500 dark:bg-neutral-700">
+                    <div class="grid h-full w-full grid-cols-2 grid-rows-2 gap-2 p-2">
+                        <div class="flex items-center justify-center font-semibold">{{ $team->name }}</div>
+                        <div class="flex items-center justify-center">{{ $team->points ?? 0 }}</div>
+                        <div class="flex items-center justify-center">
+                            <x-placeholder-pattern class="size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
+                        </div>
+                        <div class="flex items-center justify-center">
+                            <x-placeholder-pattern class="size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
         </div>
         <div class="grid auto-rows-min gap-4 grid-cols-1">
             <div>
@@ -33,26 +28,65 @@
             </div>
         </div>
         <div class="grid auto-rows-min gap-4 grid-cols-4">
-            <div
-                class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                <x-placeholder-pattern
-                    class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
+            @foreach ($B as $team)
+                <div
+                    class="relative aspect-video overflow-hidden rounded-xl border border-neutral-400 bg-slate-200 dark:border-neutral-500 dark:bg-neutral-700">
+                    <div class="grid h-full w-full grid-cols-2 grid-rows-2 gap-2 p-2">
+                        <div class="flex items-center justify-center font-semibold">{{ $team->name }}</div>
+                        <div class="flex items-center justify-center">{{ $team->points ?? 0 }}</div>
+                        <div class="flex items-center justify-center">
+                            <x-placeholder-pattern class="size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
+                        </div>
+                        <div class="flex items-center justify-center">
+                            <x-placeholder-pattern class="size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+        <div class="grid auto-rows-min gap-4 grid-cols-1">
+            <div>
+                <h1 class="">Poule C</h1>
             </div>
-            <div
-                class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                <x-placeholder-pattern
-                    class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
+        </div>
+        <div class="grid auto-rows-min gap-4 grid-cols-4">
+            @foreach ($C as $team)
+                <div
+                    class="relative aspect-video overflow-hidden rounded-xl border border-neutral-400 bg-slate-200 dark:border-neutral-500 dark:bg-neutral-700">
+                    <div class="grid h-full w-full grid-cols-2 grid-rows-2 gap-2 p-2">
+                        <div class="flex items-center justify-center font-semibold">{{ $team->name }}</div>
+                        <div class="flex items-center justify-center">{{ $team->points ?? 0 }}</div>
+                        <div class="flex items-center justify-center">
+                            <x-placeholder-pattern class="size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
+                        </div>
+                        <div class="flex items-center justify-center">
+                            <x-placeholder-pattern class="size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+        <div class="grid auto-rows-min gap-4 grid-cols-1">
+            <div>
+                <h1 class="">Poule D</h1>
             </div>
-            <div
-                class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                <x-placeholder-pattern
-                    class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
-            </div>
-            <div
-                class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                <x-placeholder-pattern
-                    class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
-            </div>
+        </div>
+        <div class="grid auto-rows-min gap-4 grid-cols-4">
+            @foreach ($D as $team)
+                <div
+                    class="relative aspect-video overflow-hidden rounded-xl border border-neutral-400 bg-slate-200 dark:border-neutral-500 dark:bg-neutral-700">
+                    <div class="grid h-full w-full grid-cols-2 grid-rows-2 gap-2 p-2">
+                        <div class="flex items-center justify-center font-semibold">{{ $team->name }}</div>
+                        <div class="flex items-center justify-center">{{ $team->points ?? 0 }}</div>
+                        <div class="flex items-center justify-center">
+                            <x-placeholder-pattern class="size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
+                        </div>
+                        <div class="flex items-center justify-center">
+                            <x-placeholder-pattern class="size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
         </div>
     </div>
 </x-layouts.app.header>

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('points');
             $table->integer('costume_rating');
             $table->smallInteger('number_of_players');
+            $table->string('poule');
             $table->timestamps();
         });
     }

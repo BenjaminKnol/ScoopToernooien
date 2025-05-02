@@ -25,28 +25,25 @@ class GameController extends Controller
         return redirect('dashboard')->with('success', 'Match added successfully.');
     }
 
-    public function show(Game $match)
+    public function show(Game $game)
     {
-        return $match;
+        return $game;
     }
 
-    public function update(Request $request, Game $match)
+    public function update(Request $request, Game $game)
     {
         $data = $request->validate([
             'outcome' => ['required'],
-            'startTime' => ['required', 'date'],
-            'endTime' => ['required', 'date'],
-            'opponents' => ['required', 'exists:teams'],
         ]);
 
-        $match->update($data);
+        $game->update($data);
 
-        return $match;
+        return redirect('dashboard')->with('success', 'Match updated successfully.');
     }
 
-    public function destroy(Game $match)
+    public function destroy(Game $game)
     {
-        $match->delete();
+        $game->delete();
 
         return response()->json();
     }

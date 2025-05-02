@@ -10,7 +10,7 @@
                                \Carbon\Carbon::parse($game->endTime)->gt(\Carbon\Carbon::now()->subHour()) &&
                                \Carbon\Carbon::parse($game->endTime)->lt(\Carbon\Carbon::now());
                     }) as $game)
-                        <form method="POST" action="{{ route('games.update', $game) }}"
+                        <form method="POST" action="{{ route('games.update', $game->id) }}"
                               class="space-y-2 border-b border-gray-200 pb-4 dark:border-gray-700">
                             @csrf
                             @method('PUT')

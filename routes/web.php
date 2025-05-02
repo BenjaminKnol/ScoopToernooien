@@ -1,14 +1,14 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\GameController as GameControllerAlias;
+use App\Http\Controllers\GameController as GameController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Http\Controllers\StandenController;
 
 Route::get('/', [StandenController::class, 'index'])->name('home');
 Route::group(['middleware' => 'auth'], function () {
-    Route::resource('games', GameControllerAlias::class);
+    Route::resource('games', GameController::class);
 });
 
 

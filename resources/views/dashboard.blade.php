@@ -2,14 +2,65 @@
     <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
         <div class="grid auto-rows-min gap-4 md:grid-cols-3">
             <div
-                class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                <x-placeholder-pattern
-                    class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
+                class="relative overflow-hidden rounded-xl border border-neutral-200 p-4 dark:border-neutral-700">
+                <h2 class="mb-4 text-lg font-semibold">Update Game Outcomes</h2>
+                <div class="space-y-4">
+                    @foreach($games->filter(function($game) {
+                        return is_null($game->outcome) &&
+                               \Carbon\Carbon::parse($game->endTime)->gt(\Carbon\Carbon::now()->subHour()) &&
+                               \Carbon\Carbon::parse($game->endTime)->lt(\Carbon\Carbon::now());
+                    }) as $game)
+                        <form method="POST" action="{{ route('games.update', $game) }}"
+                              class="space-y-2 border-b border-gray-200 pb-4 dark:border-gray-700">
+                            @csrf
+                            @method('PUT')
+                            <div class="flex items-center justify-between">
+                                <span
+                                    class="text-sm">{{ $game->team_1()->first()->name }} vs {{ $game->team_2()->first()->name }}</span>
+                                <span class="text-sm text-gray-500">{{ $game->startTime }}</span>
+                            </div>
+                            <div class="flex gap-4">
+                                <input type="text" name="outcome" value="{{ $game->outcome }}"
+                                       placeholder="Enter outcome"
+                                       class="w-full rounded-md border-2 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                <button type="submit"
+                                        class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                    Update
+                                </button>
+                            </div>
+                        </form>
+                    @endforeach
+                </div>
             </div>
             <div
-                class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                <x-placeholder-pattern
-                    class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
+                class="relative overflow-hidden rounded-xl border border-neutral-200 p-4 dark:border-neutral-700">
+                <h2 class="mb-4 text-lg font-semibold">Recently Updated Games</h2>
+                <div class="space-y-4">
+                    @foreach($games->filter(function($game) {
+                        return !is_null($game->outcome) &&
+                               $game->updated_at->gt(\Carbon\Carbon::now()->subMinutes(10));
+                    }) as $game)
+                        <form method="POST" action="{{ route('games.update', $game) }}"
+                              class="space-y-2 border-b border-gray-200 pb-4 dark:border-gray-700">
+                            @csrf
+                            @method('PUT')
+                            <div class="flex items-center justify-between">
+                                <span
+                                    class="text-sm">{{ $game->team_1()->first()->name }} vs {{ $game->team_2()->first()->name }}</span>
+                                <span class="text-sm text-gray-500">{{ $game->startTime }}</span>
+                            </div>
+                            <div class="flex gap-4">
+                                <input type="text" name="outcome" value="{{ $game->outcome }}"
+                                       placeholder="Enter outcome"
+                                       class="w-full rounded-md border-2 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                <button type="submit"
+                                        class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                                    Update
+                                </button>
+                            </div>
+                        </form>
+                    @endforeach
+                </div>
             </div>
             <div
                 class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">

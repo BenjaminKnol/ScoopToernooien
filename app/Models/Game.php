@@ -31,11 +31,11 @@ class Game extends Model
 
     public function team_1()
     {
-        return $this->hasOne(Team::class);
+        return $this->hasOne(Team::class, 'id', 'team_1_id');
     }
 
     public function team_2()
     {
-        return $this->hasOne(Team::class);
+        return $this->hasOne(Team::class, 'id', 'team_2_id');
     }
 }

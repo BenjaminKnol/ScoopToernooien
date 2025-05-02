@@ -1,4 +1,9 @@
 <x-layouts.app :title="__('Dashboard')">
+    @if (session('success'))
+        <x-alert type="success">
+            {{ session('success') }}
+        </x-alert>
+    @endif
     <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl">
         <div class="grid auto-rows-min gap-4 md:grid-cols-3">
             <div
@@ -63,9 +68,24 @@
                 </div>
             </div>
             <div
-                class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-                <x-placeholder-pattern
-                    class="absolute inset-0 size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
+                class="relative aspect-video overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700 bg-red-500 p-4">
+                <h2 class="mb-4 text-xl text-center font-bold text-white">⚠️ DANGER: Split Poules Operation ⚠️</h2>
+                <p class="mb-4 text-white text-center font-semibold">Dit is niet makkelijk te herstellen niet drukken!!!</p>
+                <form method="POST" action="{{ route('splitpoules') }}" class="space-y-4">
+                    @csrf
+                    <div class="flex flex-col items-center gap-4">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="confirm" name="confirm" required
+                                   class="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-500">
+                            <label for="confirm" class="ml-2 text-white font-medium">I understand this action cannot be
+                                undone</label>
+                        </div>
+                        <button type="submit"
+                                class="animate-pulse inline-flex justify-center rounded-md border-4 border-yellow-300 border-dashed bg-yellow-500 py-3 px-6 text-lg font-bold text-black shadow-lg hover:bg-yellow-600 focus:outline-none focus:ring-4 focus:ring-red-700 focus:ring-offset-2">
+                            ⚠️ SPLIT POULES ⚠️
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
         <div
@@ -121,4 +141,13 @@
             </form>
         </div>
     </div>
+    @if ($errors->any())
+        <x-alert type="error">
+            <ul class="list-disc list-inside">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </x-alert>
+    @endif
 </x-layouts.app>

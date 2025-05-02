@@ -11,6 +11,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('games', GameController::class);
 });
 
+Route::post('splitpoules', [StandenController::class, 'splitPoulesIntoWinnersAndLosers'])->name('splitpoules');
+
 
 Route::get('dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])

@@ -19,6 +19,16 @@ class Game extends Model
         }
     }
 
+    public function opponent(int $id)
+    {
+        if($id === $this->team_1_id){
+            return Team::find($this->team_2_id);
+        }
+        if($id === $this->team_2_id){
+            return Team::find($this->team_1_id);
+        }
+    }
+
     public function team_1()
     {
         return $this->hasOne(Team::class);

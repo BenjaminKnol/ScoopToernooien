@@ -12,8 +12,12 @@
                     <div class="grid h-full w-full grid-cols-2 grid-rows-2 gap-2 p-2">
                         <div class="flex items-center justify-center font-semibold">{{ $team->name }}</div>
                         <div class="flex items-center justify-center">{{ $team->points ?? 0 }}</div>
-                        <div class="flex items-center justify-center">
-                            <x-placeholder-pattern class="size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
+                        <div class="grid grid-cols-2 items-center justify-center">
+                            @if($team->upcomingGames())
+                                @foreach($team->upcomingGames() as $game)
+                                    <div class="text-xs">{{ $game->startTime }}  {{ $game->opponent($team->id)->name }}</div>
+                                @endforeach
+                            @endif
                         </div>
                         <div class="flex items-center justify-center">
                             <x-placeholder-pattern class="size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
@@ -34,8 +38,12 @@
                     <div class="grid h-full w-full grid-cols-2 grid-rows-2 gap-2 p-2">
                         <div class="flex items-center justify-center font-semibold">{{ $team->name }}</div>
                         <div class="flex items-center justify-center">{{ $team->points ?? 0 }}</div>
-                        <div class="flex items-center justify-center">
-                            <x-placeholder-pattern class="size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
+                        <div class="grid grid-cols-2 items-center justify-center">
+                            @if($team->upcomingGames())
+                                @foreach($team->upcomingGames() as $game)
+                                    <div class="text-xs">{{ $game->startTime }}  {{ $game->opponent($team->id)->name }}</div>
+                                @endforeach
+                            @endif
                         </div>
                         <div class="flex items-center justify-center">
                             <x-placeholder-pattern class="size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
@@ -56,8 +64,12 @@
                     <div class="grid h-full w-full grid-cols-2 grid-rows-2 gap-2 p-2">
                         <div class="flex items-center justify-center font-semibold">{{ $team->name }}</div>
                         <div class="flex items-center justify-center">{{ $team->points ?? 0 }}</div>
-                        <div class="flex items-center justify-center">
-                            <x-placeholder-pattern class="size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
+                        <div class="grid grid-cols-2 items-center justify-center">
+                            @if($team->upcomingGames())
+                                @foreach($team->upcomingGames() as $game)
+                                    <div class="text-xs">{{ $game->startTime }}  {{ $game->opponent($team->id)->name }}</div>
+                                @endforeach
+                            @endif
                         </div>
                         <div class="flex items-center justify-center">
                             <x-placeholder-pattern class="size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
@@ -78,8 +90,12 @@
                     <div class="grid h-full w-full grid-cols-2 grid-rows-2 gap-2 p-2">
                         <div class="flex items-center justify-center font-semibold">{{ $team->name }}</div>
                         <div class="flex items-center justify-center">{{ $team->points ?? 0 }}</div>
-                        <div class="flex items-center justify-center">
-                            <x-placeholder-pattern class="size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>
+                        <div class="grid grid-cols-2 items-center justify-center">
+                            @if($team->upcomingGames())
+                                @foreach($team->upcomingGames() as $game)
+                                    <div class="text-xs">{{ $game->startTime }}  {{ $game->opponent($team->id)->name }}</div>
+                                @endforeach
+                            @endif
                         </div>
                         <div class="flex items-center justify-center">
                             <x-placeholder-pattern class="size-full stroke-gray-900/20 dark:stroke-neutral-100/20"/>

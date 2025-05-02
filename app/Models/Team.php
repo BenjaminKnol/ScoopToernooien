@@ -23,6 +23,12 @@ class Team extends Model
         ];
     }
 
+
+    public function upcomingGames()
+    {
+        return Game::where('team_1_id', '=', $this->id)->orWhere('team_2_id', '=', $this->id)->get();
+    }
+
     public function games1()
     {
         return $this->hasMany(Game::class, 'team_1_id', 'id');

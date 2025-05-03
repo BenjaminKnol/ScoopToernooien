@@ -11,10 +11,7 @@ class DashboardController extends Controller
     public function index()
     {
         $teams = Team::all();
-        $pauze = Team::where('name', '=', 'Pauze')->first();
-        $games = Game::whereNot('games.team_1_id', '=', $pauze->id)
-            ->whereNot('games.team_2_id', '=', $pauze->id)
-            ->get();
+        $games = Game::all();
         return view('dashboard', [
             'teams' => $teams,
             'games' => $games,

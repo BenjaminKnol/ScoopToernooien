@@ -25,8 +25,9 @@
                                 <span class="text-sm text-gray-500">{{ $game->startTime }}</span>
                             </div>
                             <div class="flex gap-4">
-                                <input type="text" name="outcome" value="{{ $game->outcome }}"
+                                <input type="text" name="outcome" value="{{ old('outcome') }}"
                                        placeholder="Enter outcome"
+                                       required
                                        class="w-full rounded-md border-2 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                 <button type="submit"
                                         class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
@@ -55,8 +56,9 @@
                                 <span class="text-sm text-gray-500">{{ $game->startTime }}</span>
                             </div>
                             <div class="flex gap-4">
-                                <input type="text" name="outcome" value="{{ $game->outcome }}"
+                                <input type="text" name="outcome" value="{{ old('outcome') }}"
                                        placeholder="Enter outcome"
+                                       required
                                        class="w-full rounded-md border-2 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                 <button type="submit"
                                         class="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
@@ -99,7 +101,7 @@
                         <select name="team_1_id" id="team_1_id"
                                 class="mt-1 block w-full rounded-md border-2 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                             @foreach($teams as $team)
-                                <option value="{{ $team->id }}">{{ $team->name . " in poule " .$team->poule}}</option>
+                                <option value="{{ old('team_1_id') ?? $team->id }}">{{ $team->name . " in poule " .$team->poule}}</option>
                             @endforeach
                         </select>
                     </div>
@@ -109,27 +111,36 @@
                         <select name="team_2_id" id="team_2_id"
                                 class="mt-1 block w-full rounded-md border-2 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                             @foreach($teams as $team)
-                                <option value="{{ $team->id }}">{{ $team->name . " in poule " . $team->poule}}</option>
+                                <option value="{{ old('team_2_id') ?? $team->id }}">{{ $team->name . " in poule " . $team->poule}}</option>
                             @endforeach
                         </select>
                     </div>
                     <div>
                         <label for="startTime" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Start
                             Time</label>
-                        <input type="text" name="startTime" id="startTime"
+                        <input type="text" name="startTime" id="startTime" required
+                               value="{{ old('startTime') }}"
                                class="mt-1 block w-full rounded-md border-2 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                     </div>
                     <div>
                         <label for="endTime" class="block text-sm font-medium text-gray-700 dark:text-gray-200">End
                             Time</label>
-                        <input type="text" name="endTime" id="endTime"
+                        <input type="text" name="endTime" id="endTime" required
+                               value="{{ old('endTime') }}"
                                class="mt-1 block w-full rounded-md border-2 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                     </div>
                 </div>
                 <div>
+                    <label for="field" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Field</label>
+                    <input type="text" name="field" id="field" required
+                           value="{{ old('field') }}"
+                           class="mt-1 block w-full rounded-md border-2 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                </div>
+                <div>
                     <label for="outcome"
                            class="block text-sm font-medium text-gray-700 dark:text-gray-200">Outcome</label>
-                    <input type="text" name="outcome" id="outcome"
+                    <input type="text" name="outcome" id="outcome" required
+                           value="{{ old('outcome') }}"
                            class="mt-1 block w-full rounded-md border-2 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                 </div>
                 <div class="flex justify-end">

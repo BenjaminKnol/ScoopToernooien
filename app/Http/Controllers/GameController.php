@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Game;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class GameController extends Controller
 {
@@ -16,11 +17,14 @@ class GameController extends Controller
     {
         $data = $request->validate([
             'outcome' => 'string',
-            'startTime' => 'required',
-            'endTime' => 'required',
+            'startTime' => ['required', Rule::date()->format('H:i')],
+            'endTime' => ['required', Rule::date()->format('H:i')],
             'team_1_id' => 'required',
             'team_2_id' => 'required',
+            'field' => ['required', 'numeric'],
         ]);
+
+        $game = Game::create($data);
 
         return redirect('dashboard')->with('success', 'Match added successfully.');
     }

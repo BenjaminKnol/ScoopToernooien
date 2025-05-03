@@ -13,7 +13,7 @@ Route::group(['middleware' => 'auth'], function () {
 
 Route::post('splitpoules', [StandenController::class, 'splitPoulesIntoWinnersAndLosers'])->name('splitpoules');
 
-Route::get('standentesting', [StandenController::class, 'scheduleGroupPhase'])->name('TESTING');
+Route::get('schemaAanmaken', [StandenController::class, 'scheduleGroupPhase'])->middleware('auth')->name('schemaAanmaken');
 
 
 Route::get('dashboard', [DashboardController::class, 'index'])

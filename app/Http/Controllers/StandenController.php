@@ -39,11 +39,15 @@ class StandenController extends Controller
 
         Game::destroy(Game::all());
 
+        $this->scheduleGroupPhase();
+
         return redirect()->back()->with('success', 'Poules gesplitst, niet nog een keer drukken por favor');
     }
 
     public function scheduleGroupPhase()
     {
+        Game::destroy(Game::all());
+
         $teams = Team::whereNotNull('poule')->get();
 
         if ($teams->isEmpty()) {
@@ -51,6 +55,12 @@ class StandenController extends Controller
         }
 
         $grouped = $teams->groupBy('poule')->sortKeys(); // group by poule A, B, C...
+
+        if (count($grouped) > 2) {
+            $startingTime = 13;
+        } else {
+            $startingTime = 15;
+        }
 
         $allMatches = collect();
         foreach ($grouped as $group => $teamsInGroup) {
@@ -60,7 +70,7 @@ class StandenController extends Controller
 
         $slots = $this->scheduleMatches($allMatches->toArray());
 
-        $startTime = Carbon::createFromTime(13, 0);
+        $startTime = Carbon::createFromTime($startingTime, 0);
         $schedule = [];
 
         foreach ($slots as $i => $slot) {
@@ -86,7 +96,7 @@ class StandenController extends Controller
             }
         }
 
-        return Game::all();
+        return redirect('dashboard')->with('success', 'Group phase scheduled successfully.');
     }
 
     private function roundRobin(Collection $teams): array

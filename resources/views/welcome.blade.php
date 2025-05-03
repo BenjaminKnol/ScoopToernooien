@@ -16,7 +16,7 @@
                             @if($team->upcomingGames())
                                 @foreach($team->upcomingGames() as $game)
                                     <div
-                                        class="text-xs">{{ $game->startTime }}  {{ $game->opponent($team->id)->name }}</div>
+                                        class="text-xs">{{ $game->startTime }}  {{ $game->opponent($team->id)->name . " veld: " . $game->field+1}}</div>
                                 @endforeach
                             @endif
                         </div>
@@ -43,7 +43,7 @@
                             @if($team->upcomingGames())
                                 @foreach($team->upcomingGames() as $game)
                                     <div
-                                        class="text-xs">{{ $game->startTime }}  {{ $game->opponent($team->id)->name }}</div>
+                                        class="text-xs">{{ $game->startTime }}  {{ $game->opponent($team->id)->name . " veld: " . $game->field+1}}</div>
                                 @endforeach
                             @endif
                         </div>
@@ -70,7 +70,7 @@
                             @if($team->upcomingGames())
                                 @foreach($team->upcomingGames() as $game)
                                     <div
-                                        class="text-xs">{{ $game->startTime }}  {{ $game->opponent($team->id)->name }}</div>
+                                        class="text-xs">{{ $game->startTime }}  {{ $game->opponent($team->id)->name . " veld: " . $game->field+1}}</div>
                                 @endforeach
                             @endif
                         </div>
@@ -97,7 +97,7 @@
                             @if($team->upcomingGames())
                                 @foreach($team->upcomingGames() as $game)
                                     <div
-                                        class="text-xs">{{ $game->startTime }}  {{ $game->opponent($team->id)->name }}</div>
+                                        class="text-xs">{{ $game->startTime }}  {{ $game->opponent($team->id)->name . " veld: " . $game->field+1}}</div>
                                 @endforeach
                             @endif
                         </div>
@@ -125,7 +125,7 @@
                                 @if($team->upcomingGames())
                                     @foreach($team->upcomingGames() as $game)
                                         <div
-                                            class="text-xs">{{ $game->startTime }}  {{ $game->opponent($team->id)->name }}</div>
+                                            class="text-xs">{{ $game->startTime }}  {{ $game->opponent($team->id)->name . " veld: " . $game->field+1}}</div>
                                     @endforeach
                                 @endif
                             </div>

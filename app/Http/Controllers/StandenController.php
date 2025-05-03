@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Game;
 use App\Models\Team;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
+use Request;
 
 class StandenController extends Controller
 {
@@ -38,6 +41,124 @@ class StandenController extends Controller
 
         return redirect()->back()->with('success', 'Poules gesplitst, niet nog een keer drukken por favor');
     }
+
+    public function scheduleGroupPhase()
+    {
+        $teams = Team::whereNotNull('poule')->get();
+
+        if ($teams->isEmpty()) {
+            return response()->json(['error' => 'No teams with a poule assigned'], 422);
+        }
+
+        $grouped = $teams->groupBy('poule')->sortKeys(); // group by poule A, B, C...
+
+        $allMatches = collect();
+        foreach ($grouped as $group => $teamsInGroup) {
+            $matches = $this->roundRobin($teamsInGroup->values());
+            $allMatches = $allMatches->merge($matches);
+        }
+
+        $slots = $this->scheduleMatches($allMatches->toArray());
+
+        $startTime = Carbon::createFromTime(13, 0);
+        $schedule = [];
+
+        foreach ($slots as $i => $slot) {
+            $schedule[] = [
+                'time' => $startTime->copy()->addMinutes($i * 15)->format('H:i'),
+                'games' => collect($slot)->map(fn($match) => [
+                    'team_a' => $match[0]->id,
+                    'team_b' => $match[1]->id,
+                ])->values(),
+            ];
+        }
+
+        foreach ($schedule as $i => $slot) {
+            for ($j = 0; $j < $slot['games']->count(); $j++) {
+                Game::create([
+                    'team_1_id' => $slot['games'][$j]['team_a'],
+                    'team_2_id' => $slot['games'][$j]['team_b'],
+                    'startTime' => $slot['time'],
+                    'endTime' => Carbon::parse($slot['time'])->addMinutes(15)->format('H:i'),
+                    'outcome' => null,
+                    'field' => $j
+                ]);
+            }
+        }
+
+        return Game::all();
+    }
+
+    private function roundRobin(Collection $teams): array
+    {
+        $matches = [];
+        $count = $teams->count();
+
+        for ($i = 0; $i < $count - 1; $i++) {
+            for ($j = $i + 1; $j < $count; $j++) {
+                $matches[] = [$teams[$i], $teams[$j]];
+            }
+        }
+
+        return $matches;
+    }
+
+    private function scheduleMatches(array $matches): array
+    {
+        $slots = [];
+        $teamLastPlayedAt = [];
+
+        foreach ($matches as $match) {
+            [$teamA, $teamB] = $match;
+            $placed = false;
+
+            for ($slotIndex = 0; $slotIndex <= count($slots); $slotIndex++) {
+                if (!isset($slots[$slotIndex])) {
+                    $slots[$slotIndex] = [];
+                }
+
+                // Skip if slot is full (max 5 games = 10 teams)
+                if (count($slots[$slotIndex]) >= 5) {
+                    continue;
+                }
+
+                $aPlayed = $teamLastPlayedAt[$teamA->id] ?? -10;
+                $bPlayed = $teamLastPlayedAt[$teamB->id] ?? -10;
+
+                // Avoid 3+ consecutive games
+                if (
+                    ($slotIndex - $aPlayed <= 1 && $slotIndex - ($teamLastPlayedAt[$teamA->id - 1] ?? -10) == 1) ||
+                    ($slotIndex - $bPlayed <= 1 && $slotIndex - ($teamLastPlayedAt[$teamB->id - 1] ?? -10) == 1)
+                ) {
+                    continue;
+                }
+
+                // Check for conflicts with others in the slot
+                $teamsInSlot = array_merge(...array_map(fn($m) => [$m[0]->id, $m[1]->id], $slots[$slotIndex]));
+                if (in_array($teamA->id, $teamsInSlot) || in_array($teamB->id, $teamsInSlot)) {
+                    continue;
+                }
+
+                // Place match
+                $slots[$slotIndex][] = $match;
+                $teamLastPlayedAt[$teamA->id] = $slotIndex;
+                $teamLastPlayedAt[$teamB->id] = $slotIndex;
+                $placed = true;
+                break;
+            }
+
+            if (!$placed) {
+                // Last resort: new slot at the end
+                $slots[] = [$match];
+                $slotIndex = count($slots) - 1;
+                $teamLastPlayedAt[$teamA->id] = $slotIndex;
+                $teamLastPlayedAt[$teamB->id] = $slotIndex;
+            }
+        }
+
+        return $slots;
+    }
+
 
     private function updateTeamPoules($teams, string $newPoule): void
     {

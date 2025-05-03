@@ -13,6 +13,8 @@ Route::group(['middleware' => 'auth'], function () {
 
 Route::post('splitpoules', [StandenController::class, 'splitPoulesIntoWinnersAndLosers'])->name('splitpoules');
 
+Route::get('standentesting', [StandenController::class, 'scheduleGroupPhase'])->name('TESTING');
+
 
 Route::get('dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])

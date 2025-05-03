@@ -17,8 +17,8 @@ class GameController extends Controller
     {
         $data = $request->validate([
             'outcome' => 'string',
-            'startTime' => ['required', Rule::date()->format('H:i')],
-            'endTime' => ['required', Rule::date()->format('H:i')],
+            'startTime' => ['required'],
+            'endTime' => ['required'],
             'team_1_id' => 'required',
             'team_2_id' => 'required',
             'field' => ['required', 'numeric'],
@@ -42,10 +42,12 @@ class GameController extends Controller
 
         $game->update($data);
 
+        $game->save();
+
+        StandenController::calculatePoints();
+
         return redirect('dashboard')->with('success', 'Match updated successfully.');
     }
-
-
 
     public function destroy(Game $game)
     {

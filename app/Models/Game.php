@@ -19,6 +19,23 @@ class Game extends Model
         }
     }
 
+    public function calculatePoints() : void
+    {
+        $team_1 = Team::where('id', '=', $this->team_1_id)->first();
+        $team_2 = Team::where('id', '=', $this->team_2_id)->first();
+        if(isset($this->outcome)){
+            $outcomes = explode('-', $this->outcome);
+            if($outcomes[0] > $outcomes[1]){
+                $team_1->update(['points' => $team_1->points + 3]);
+            } elseif ($outcomes[0] < $outcomes[1]) {
+                $team_2->update(['points' => $team_2->points + 3]);
+            } elseif ($outcomes[0] === $outcomes[1]) {
+                $team_1->update(['points' => $team_1->points + 1]);
+                $team_2->update(['points' => $team_2->points + 1]);
+            }
+        }
+    }
+
     public function opponent(int $id)
     {
         if($id === $this->team_1_id){

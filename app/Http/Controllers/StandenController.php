@@ -18,6 +18,19 @@ class StandenController extends Controller
         return view('welcome', Team::getTeamsByPoules());
     }
 
+    public static function calculatePoints()
+    {
+        $games = Game::all();
+        foreach (Team::all() as $team) {
+            $team->update([
+                'points' => 0,
+            ]);;
+        }
+        foreach ($games as $game) {
+            $game->calculatePoints();
+        }
+    }
+
     public function splitPoulesIntoWinnersAndLosers()
     {
         $poules = Team::select('poule')

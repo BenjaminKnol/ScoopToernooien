@@ -150,8 +150,8 @@ class StandenController extends Controller
 
                 // Avoid 3+ consecutive games
                 if (
-                    ($slotIndex - $aPlayed <= 1 && $slotIndex - ($teamLastPlayedAt[$teamA->id - 1] ?? -10) == 1) ||
-                    ($slotIndex - $bPlayed <= 1 && $slotIndex - ($teamLastPlayedAt[$teamB->id - 1] ?? -10) == 1)
+                    ($slotIndex - $aPlayed <= 3 && $slotIndex - ($teamLastPlayedAt[$teamA->id - 1] ?? -10) == 3) ||
+                    ($slotIndex - $bPlayed <= 3 && $slotIndex - ($teamLastPlayedAt[$teamB->id - 1] ?? -10) == 3)
                 ) {
                     continue;
                 }

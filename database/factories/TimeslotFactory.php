@@ -18,7 +18,7 @@ class TimeslotFactory extends Factory
         $poule = $this->faker->randomElement(array_keys($teams));
         $team1 = $this->faker->randomElement($teams[$poule]);
         $team2 = $this->faker->randomElement($teams[$poule]);
-        // TODO: find a more clever solution. (pop from array?)
+        // TODO: find a more clever solution. (pop from array?) also currrently only 1 game. should be as many as fields...
         while ($team1 == $team2) {
             $team2 = $this->faker->randomElement($teams[$poule]);
         }

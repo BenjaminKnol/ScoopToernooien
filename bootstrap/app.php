@@ -14,6 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'no-admin-on-team' => \App\Http\Middleware\RedirectAdminFromMyTeam::class,
         ]);
+
+        // Apply locale resolution to all web requests
+        $middleware->appendToGroup('web', \App\Http\Middleware\SetLocale::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

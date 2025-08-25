@@ -15,7 +15,8 @@ class StandenController extends Controller
 
     public function index()
     {
-        return view('welcome', Team::getTeamsByPoules());
+        $teams = Team::orderByDesc('points')->get();
+        return view('welcome', ['teams' => $teams]);
     }
 
     public static function calculatePoints()

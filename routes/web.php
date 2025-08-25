@@ -2,12 +2,16 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GameController;
-use App\Http\Controllers\TeamController;
+use App\Http\Controllers\LocaleController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Http\Controllers\StandenController;
 
 Route::get('/', [StandenController::class, 'index'])->name('home');
+
+// Language change endpoint (web session + optional user profile)
+Route::post('/locale', [LocaleController::class, 'update'])->name('locale.update');
+
 Route::group(['middleware' => 'auth'], function () {
     Route::resource('games', GameController::class);
     Route::get('/team', [TeamController::class, 'myTeam'])

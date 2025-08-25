@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Benjamin Knol',
             'email' => 'benjaminknol@shcscoop.nl',
             'password' => bcrypt('HuizentoernooiZonderWijWonenIsNietHetzelfde'),
+            'is_admin' => true,
         ]);
 
         User::factory()->create([

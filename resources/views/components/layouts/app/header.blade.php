@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         @include('partials.head')
     </head>
@@ -28,6 +28,26 @@
                 <flux:tooltip :content="__('Search')" position="bottom">
                     <flux:navbar.item class="!h-10 [&>div>svg]:size-5" icon="magnifying-glass" href="#" :label="__('Search')" />
                 </flux:tooltip>
+
+                <!-- Language switcher (desktop) -->
+                <flux:dropdown>
+                    <flux:button variant="ghost" class="!h-10 !px-2" icon="globe-alt"/>
+                    <flux:menu>
+                        <form method="POST" action="{{ route('locale.update') }}">
+                            @csrf
+                            <input type="hidden" name="redirect" value="{{ url()->current() }}">
+                            <input type="hidden" name="locale" value="en">
+                            <flux:menu.item as="button" type="submit">{{ __('English') }}</flux:menu.item>
+                        </form>
+                        <form method="POST" action="{{ route('locale.update') }}">
+                            @csrf
+                            <input type="hidden" name="redirect" value="{{ url()->current() }}">
+                            <input type="hidden" name="locale" value="nl">
+                            <flux:menu.item as="button" type="submit">{{ __('Dutch') }}</flux:menu.item>
+                        </form>
+
+                    </flux:menu>
+                </flux:dropdown>
             </flux:navbar>
 
             <!-- Desktop User Menu -->
@@ -87,6 +107,21 @@
             <flux:spacer />
 
             <flux:navlist variant="outline">
+                <flux:navlist.group :heading="__('Language')">
+                    <form method="POST" action="{{ route('locale.update') }}">
+                        @csrf
+                        <input type="hidden" name="redirect" value="{{ url()->current() }}">
+                        <input type="hidden" name="locale" value="en">
+                        <flux:navlist.item as="button" type="submit" icon="globe-alt">{{ __('English') }}</flux:navlist.item>
+                    </form>
+                    <form method="POST" action="{{ route('locale.update') }}">
+                        @csrf
+                        <input type="hidden" name="redirect" value="{{ url()->current() }}">
+                        <input type="hidden" name="locale" value="nl">
+                        <flux:navlist.item as="button" type="submit" icon="globe-alt">{{ __('Dutch') }}</flux:navlist.item>
+                    </form>
+                </flux:navlist.group>
+
                 @auth
                 <flux:navlist.group :heading="__('Account')">
                     <flux:navlist.item icon="cog" :href="route('settings.profile')" :current="request()->routeIs('settings.*')" wire:navigate>

@@ -11,7 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->alias([
+            'no-admin-on-team' => \App\Http\Middleware\RedirectAdminFromMyTeam::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -1,4 +1,4 @@
-<x-layouts.app :title="__('Dashboard')">
+<x-layouts.app.header>
     @if (session('success'))
         <x-alert type="success">
             {{ session('success') }}
@@ -195,4 +195,4 @@
             </ul>
         </x-alert>
     @endif
-</x-layouts.app>
+</x-layouts.app.header>

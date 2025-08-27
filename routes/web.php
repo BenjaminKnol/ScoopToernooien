@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\PlayerController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\PlayerAdminController;
@@ -28,6 +29,7 @@ Route::group(['middleware' => 'auth'], function () {
     // Players admin (CSV import + assign to teams)
     Route::post('/players/import', [PlayerAdminController::class, 'import'])->middleware('admin')->name('players.import');
     Route::put('/players/{player}', [PlayerAdminController::class, 'update'])->middleware('admin')->name('players.update');
+    Route::delete('/players/{player}', [PlayerController::class, 'destroy'])->middleware('admin')->name('players.destroy');
 });
 
 // Dashboard for admins

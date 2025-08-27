@@ -4,7 +4,7 @@
             {{ session('success') }}
         </x-alert>
     @endif
-    <div class="flex h-full w-full flex-1 flex-col gap-6 rounded-xl">
+    <div class="flex h-full w-full flex-1 flex-col gap-6 rounded-xl mt-2">
         <div
             class="relative overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
             <form method="POST" action="{{ route('games.store') }}" class="p-6 space-y-4">
@@ -194,20 +194,21 @@
         <!-- Players: Import & Assign -->
         <div class="relative overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700 p-4">
             <h2 class="mb-4 text-lg font-semibold">Players</h2>
-            <div class="grid gap-6 md:grid-cols-3">
+            <div class="grid gap-6">
                 <!-- Import CSV -->
+                <div></div>
                 <form method="POST" action="{{ route('players.import') }}" enctype="multipart/form-data" class="space-y-3 md:col-span-1">
                     @csrf
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Import CSV</label>
                     <input type="file" name="csv" accept=".csv,text/csv" class="mt-1 block w-full rounded-md border-2 border-gray-300" required />
-                    <p class="text-xs text-gray-500">Required columns: First Name, Last Name, Email</p>
+                    <p class="text-xs text-gray-500">Required columns: Voornaam, Achternaam, Email</p>
                     <div class="flex justify-end">
                         <button type="submit" class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700">Upload</button>
                     </div>
                 </form>
-
+                <div></div>
                 <!-- Assign Players to Teams -->
-                <div class="md:col-span-2">
+                <div class="">
                     <div class="overflow-x-auto">
                         <table class="min-w-full text-sm">
                             <thead>
@@ -234,11 +235,16 @@
                                                     @endforeach
                                                 </select>
                                                 <button type="submit" class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700">Save</button>
+                                                <button type="submit" class="inline-flex justify-center rounded-md bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700" onclick="return confirm('Delete this player?');">Delete</button>
                                             </form>
                                         </td>
                                         <td class="py-2 pr-4 text-right">
                                             @if($player->user)
                                                 <span class="text-gray-500">User: {{ $player->user->name }}</span>
+                                                <form id="delete-user-{{ $player->id }}" method="POST" action="{{ route('players.destroy', $player->id) }}" class="hidden">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                </form>
                                             @else
                                                 <span class="text-orange-600">No user</span>
                                             @endif

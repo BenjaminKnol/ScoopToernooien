@@ -196,7 +196,6 @@
             <h2 class="mb-4 text-lg font-semibold">Players</h2>
             <div class="grid gap-6">
                 <!-- Import CSV -->
-                <div></div>
                 <form method="POST" action="{{ route('players.import') }}" enctype="multipart/form-data" class="space-y-3 md:col-span-1">
                     @csrf
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Import CSV</label>
@@ -206,7 +205,6 @@
                         <button type="submit" class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700">Upload</button>
                     </div>
                 </form>
-                <div></div>
                 <!-- Assign Players to Teams -->
                 <div class="">
                     <div class="overflow-x-auto">

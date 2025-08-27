@@ -13,7 +13,7 @@ class DashboardController extends Controller
     {
         $teams = Team::all();
         $games = Game::all();
-        $players = Player::with(['team','user'])->orderBy('team_id')->orderBy('secondName')->get();
+        $players = Player::with(['team','user'])->orderByRaw('team_id IS NOT NULL')->get();
         return view('dashboard', [
             'teams' => $teams,
             'games' => $games,

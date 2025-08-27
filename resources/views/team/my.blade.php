@@ -17,9 +17,12 @@
                     your team, or provide guidance to implement automatic linking from sign-ups.</p>
             </div>
         @else
+            <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">{{ $team->name }}</h1>
+
+
             {{--            Upcoming games--}}
             <div class="rounded-xl border border-neutral-300 dark:border-neutral-700 p-4 bg-white dark:bg-neutral-800">
-                @php $games = $team->upcomingGames()->sortBy('startTime')->take(3); @endphp
+                @php $games = $team->upcomingGames()->sortBy('startTime'); @endphp
                 @if($games->count() > 0)
                     <ul class="space-y-1.5">
                         @foreach($games as $game)
@@ -33,7 +36,7 @@
                     <div class="text-zinc-500 dark:text-zinc-400">{{ __('No upcoming games') }}</div>
                 @endif
             </div>
-            {{--            Chat / Posts--}}
+            {{--            Chat / Posts TODO:IMPLEMENT--}}
 
         @endif
 

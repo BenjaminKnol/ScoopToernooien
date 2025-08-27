@@ -16,7 +16,7 @@ class PlayerFactory extends Factory
     {
         return [
             'firstName' => $this->faker->firstName(),
-            'secondName' => $this->faker->lastName(),
+            'lastName' => $this->faker->lastName(),
             'email' => $this->faker->unique()->safeEmail(),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),

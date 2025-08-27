@@ -44,7 +44,9 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('EenOrigineelWachtwoordVoorRithik')
         ]);
         $this->call([
-
+            TeamSeeder::class,
+            PlayerSeeder::class,
+            GameSeeder::class,
         ]);
     }
 }

@@ -11,8 +11,6 @@ use Illuminate\Support\Carbon;
 
 class GameSeeder extends Seeder
 {
-    private const MAX_CONCURRENT_GAMES = 5;
-
     public function run(): void
     {
 

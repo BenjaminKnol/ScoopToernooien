@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'no-admin-on-team' => \App\Http\Middleware\RedirectAdminFromMyTeam::class,
+            'admin' => \App\Http\Middleware\AdminOnly::class,
         ]);
 
         // Apply locale resolution to all web requests

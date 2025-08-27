@@ -40,4 +40,9 @@ class Team extends Model
     {
         return $this->hasMany(Game::class, 'team_2_id', 'id');
     }
+
+    public function players()
+    {
+        return $this->hasMany(Player::class);
+    }
 }

@@ -10,8 +10,15 @@ class Player extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

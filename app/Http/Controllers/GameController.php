@@ -16,12 +16,12 @@ class GameController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'outcome' => 'string',
-            'startTime' => ['required'],
-            'endTime' => ['required'],
-            'team_1_id' => 'required',
-            'team_2_id' => 'required',
-            'field' => ['required', 'numeric'],
+            'outcome' => 'nullable|string',
+            'startTime' => ['required', 'string'],
+            'endTime' => ['required', 'string'],
+            'team_1_id' => ['required', 'integer'],
+            'team_2_id' => ['required', 'integer', 'different:team_1_id'],
+            'field' => ['required', 'integer'],
         ]);
 
         $game = Game::create($data);
@@ -37,14 +37,20 @@ class GameController extends Controller
     public function update(Request $request, Game $game)
     {
         $data = $request->validate([
-            'outcome' => ['required'],
+            'outcome' => ['nullable', 'string'],
+            'startTime' => ['sometimes', 'string'],
+            'endTime' => ['sometimes', 'string'],
+            'team_1_id' => ['sometimes'],
+            'team_2_id' => ['sometimes'],
+            'field' => ['sometimes', 'numeric'],
         ]);
 
         $game->update($data);
 
-        $game->save();
-
-        StandenController::calculatePoints();
+        // Recalculate points only when outcome is provided (or changed)
+        if ($request->filled('outcome')) {
+            StandenController::calculatePoints();
+        }
 
         return redirect('dashboard')->with('success', 'Match updated successfully.');
     }
@@ -52,7 +58,6 @@ class GameController extends Controller
     public function destroy(Game $game)
     {
         $game->delete();
-
-        return response()->json();
+        return redirect('dashboard')->with('success', 'Match deleted successfully.');
     }
 }

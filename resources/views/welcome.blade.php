@@ -18,7 +18,7 @@
                     <div class="flex h-full flex-col gap-3 p-4">
                         <div class="flex items-center justify-between">
                             <div class="truncate font-semibold text-zinc-900 dark:text-zinc-50">{{ $team->name }}</div>
-                            <div class="inline-flex items-center rounded-lg bg-zinc-100 px-2 py-1 text-sm font-medium text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200">
+                            <div class="mr-16 inline-flex items-center rounded-lg bg-zinc-100 px-2 py-1 text-sm font-medium text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200">
                                 {{ $team->points ?? 0 }} {{ __('pts') }}
                             </div>
                         </div>

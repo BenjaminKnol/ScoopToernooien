@@ -11,14 +11,6 @@ class Game extends Model
 
     protected $guarded = [];
 
-    public static function generateGames()
-    {
-        $teams = Team::getTeamsByPoules();
-        foreach ($teams['A'] as $teams) {
-
-        }
-    }
-
     public function calculatePoints() : void
     {
         $team_1 = Team::where('id', '=', $this->team_1_id)->first();

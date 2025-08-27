@@ -13,7 +13,7 @@ class PlayerAdminController extends Controller
 {
     /**
      * Import players from a CSV file and create corresponding User accounts.
-     * Expected headers (case-insensitive, flexible): firstName, lastName (or secondName), email
+     * Expected headers (case-insensitive, flexible): firstName, lastName (or secondName), email, dutch options also available
      */
     public function import(Request $request)
     {
@@ -50,9 +50,10 @@ class PlayerAdminController extends Controller
                 return null;
             };
 
-            $idxFirst = $findIndex(['firstname','first_name','first']);
-            $idxLast  = $findIndex(['lastname','last_name','secondname','second','surname']);
-            $idxEmail = $findIndex(['email','e-mail']);
+
+            $idxFirst = $findIndex(['firstname','first_name','first','voornaam']);
+            $idxLast  = $findIndex(['lastname','last_name','secondname','second','surname','achternaam']);
+            $idxEmail = $findIndex(['email','e_mail']);
 
             if ($idxFirst === null || $idxLast === null || $idxEmail === null) {
                 throw new \RuntimeException('CSV must contain First Name, Last Name, and Email columns.');
@@ -82,11 +83,10 @@ class PlayerAdminController extends Controller
                 } else {
                     $updated++;
                 }
-
                 // Create or update player record
                 $player = Player::where('email', $email)->first();
                 if (!$player) {
-                    Player::create([
+                    $player = Player::create([
                         'firstName' => $first,
                         'secondName' => $last,
                         'email' => $email,

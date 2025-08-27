@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Collection;
 
 class Team extends Model
@@ -12,36 +13,23 @@ class Team extends Model
 
     protected $guarded = [];
 
-    public static function getTeamsByPoules(): array
-    {
-        $allTeams = Team::all();
-        return [
-            'A' => $allTeams->where('poule', '=', 'A'),
-            'B' => $allTeams->where('poule', '=', 'B'),
-            'C' => $allTeams->where('poule', '=', 'C'),
-            'D' => $allTeams->where('poule', '=', 'D'),
-            'Verliezers' => $allTeams->where('poule', '=', 'Verliezers'),
-            'Winnaars' => $allTeams->where('poule', '=', 'Winnaars'),
-        ];
-    }
 
-
-    public function upcomingGames()
+    public function upcomingGames() : Collection
     {
         return Game::where('team_1_id', '=', $this->id)->orWhere('team_2_id', '=', $this->id)->get();
     }
 
-    public function games1()
+    public function games1() : Relation
     {
         return $this->hasMany(Game::class, 'team_1_id', 'id');
     }
 
-    public function games2()
+    public function games2() : Relation
     {
         return $this->hasMany(Game::class, 'team_2_id', 'id');
     }
 
-    public function players()
+    public function players() : Relation
     {
         return $this->hasMany(Player::class);
     }

@@ -88,7 +88,7 @@ class PlayerAdminController extends Controller
                 if (!$player) {
                     $player = Player::create([
                         'firstName' => $first,
-                        'secondName' => $last,
+                        'lastName' => $last,
                         'email' => $email,
                         'user_id' => $user->id,
                         'team_id' => null,
@@ -96,7 +96,7 @@ class PlayerAdminController extends Controller
                 } else {
                     $player->update([
                         'firstName' => $first ?: $player->firstName,
-                        'secondName' => $last ?: $player->secondName,
+                        'lastName' => $last ?: $player->lastName,
                         'user_id' => $user->id,
                     ]);
                 }

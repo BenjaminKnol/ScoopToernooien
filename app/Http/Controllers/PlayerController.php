@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Player;
+use App\Models\User;
+use Dflydev\DotAccessData\Data;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class PlayerController extends Controller
 {
@@ -16,11 +19,24 @@ class PlayerController extends Controller
     {
         $data = $request->validate([
             'firstName' => ['required'],
-            'secondName' => ['required'],
-            'team_id' => ['required', 'exists:teams'],
+            'lastName' => ['required'],
+            'email' => ['required'],
+            'team_id' => ['nullable', 'exists:teams'],
         ]);
 
-        return Player::create($data);
+        $user = User::where('email', $data['email'])->first();
+        if (!$user) {
+            $username = Str::studly($data['firstName'].$data['lastName']); // FirstNameLastName
+            $user = User::create([
+                'name' => $username,
+                'email' => $data['email'],
+                'password' => $data['email'], // As requested (insecure, event-only)
+                'is_admin' => false,
+            ]);
+        }
+        $data['user_id'] = $user->id;
+        $player = Player::create($data);
+        return redirect()->route('dashboard')->with('success', __('Player created successfully.'));
     }
 
     public function show(Player $player)
@@ -32,7 +48,7 @@ class PlayerController extends Controller
     {
         $data = $request->validate([
             'firstName' => ['required'],
-            'secondName' => ['required'],
+            'lastName' => ['required'],
             'team_id' => ['required', 'exists:teams'],
         ]);
 

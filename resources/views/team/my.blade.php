@@ -28,7 +28,7 @@
                         @foreach($games as $game)
                             <li class="flex items-center justify-between">
                                 <span class="truncate">{{ $game->startTime }} · {{ $game->opponent($team->id)->name }}</span>
-                                <span class="text-zinc-500 dark:text-zinc-400">{{ __('Field :n', ['n' => $game->field + 1]) }}</span>
+                                <span class="text-zinc-500 dark:text-zinc-400">{{ __('Field :n', ['n' => $game->field]) }}</span>
                             </li>
                         @endforeach
                     </ul>

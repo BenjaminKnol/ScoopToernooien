@@ -9,7 +9,11 @@
             class="relative overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
             <form method="POST" action="{{ route('games.store') }}" class="p-6 space-y-4">
                 @csrf
-                <h2 class="mb-2 text-lg font-semibold">Create Game</h2>
+                <div class="flex items-center justify-between mb-2">
+                    <h2 class="text-lg font-semibold">Create Game</h2>
+                    <a href="{{ route('dashboard.generateSchedule') }}"
+                       class="text-sm text-indigo-600 hover:text-indigo-800">{{ __('Generate schedule') }}</a>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="team_1_id" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Team 1</label>
@@ -207,23 +211,30 @@
                 </form>
                 <!-- Manually create a player -->
                 <p class="block text-sm font-medium text-gray-700 dark:text-gray-200">Manual player creation</p>
-                <form method="POST" id="createPlayerManually" action="{{ route('players.store') }}" class="grid grid-cols-3 gap-3 items-end border-gray-200 pb-3 dark:border-gray-700">
+                <form method="POST" id="createPlayerManually" action="{{ route('players.store') }}" class="grid grid-cols-4 gap-3 items-end border-gray-200 pb-3 dark:border-gray-700">
                     @csrf
                     <div class="">
                         <label class="block text-sm">{{ __('firstName') }}</label>
-                        <input type="text" name="name" value="" required class="mt-1 block w-full rounded-md border-2 border-gray-300" />
+                        <input type="text" name="firstName" value="{{ old('firstName') }}" required class="mt-1 block w-full rounded-md border-2 border-gray-300" />
                     </div>
                     <div class="">
                         <label class="block text-sm">{{ __('lastName') }}</label>
-                        <input type="text" name="name" value="" required class="mt-1 block w-full rounded-md border-2 border-gray-300" />
+                        <input type="text" name="lastName" value="{{ old('lastName') }}" required class="mt-1 block w-full rounded-md border-2 border-gray-300" />
                     </div>
                     <div class="">
                         <label class="block text-sm">E-mail</label>
-                        <input type="text" name="name" value="" required class="mt-1 block w-full rounded-md border-2 border-gray-300" />
+                        <input type="text" name="email" value="{{ old('email') }}" required class="mt-1 block w-full rounded-md border-2 border-gray-300" />
                     </div>
-                    <div></div>
-                    <div></div>
-                    <div class="flex justify-end">
+                    <div class="h-full">
+                        <label class="block text-sm">Team</label>
+                        <select name="team_id" class="mt-1 block w-full rounded-md border-2 border-gray-300">
+                            <option value="">— Unassigned —</option>
+                            @foreach($teams as $team)
+                                <option value="{{ $team->id }}">{{ $team->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="flex justify-end col-span-4">
                         <button type="submit" form="createPlayerManually" class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700">Create Team</button>
                     </div>
                 </form>

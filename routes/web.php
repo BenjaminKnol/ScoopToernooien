@@ -26,9 +26,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::put('/teams/{team}', [\App\Http\Controllers\TeamController::class, 'update'])->middleware('admin')->name('teams.update');
     Route::delete('/teams/{team}', [\App\Http\Controllers\TeamController::class, 'destroy'])->middleware('admin')->name('teams.destroy');
 
-    // Players admin (CSV import + assign to teams)
+    // Players admin (CSV import)
     Route::post('/players/import', [PlayerAdminController::class, 'import'])->middleware('admin')->name('players.import');
     Route::put('/players/{player}', [PlayerAdminController::class, 'update'])->middleware('admin')->name('players.update');
+    Route::post('/players', [PlayerController::class, 'store'])->middleware('admin')->name('players.store');
     Route::delete('/players/{player}', [PlayerController::class, 'destroy'])->middleware('admin')->name('players.destroy');
 });
 

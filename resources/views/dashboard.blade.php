@@ -196,13 +196,35 @@
             <h2 class="mb-4 text-lg font-semibold">Players</h2>
             <div class="grid gap-6">
                 <!-- Import CSV -->
-                <form method="POST" action="{{ route('players.import') }}" enctype="multipart/form-data" class="space-y-3 md:col-span-1">
+                <form method="POST" action="{{ route('players.import') }}" enctype="multipart/form-data" class="space-y-3">
                     @csrf
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Import CSV</label>
                     <input type="file" name="csv" accept=".csv,text/csv" class="mt-1 block w-full rounded-md border-2 border-gray-300" required />
                     <p class="text-xs text-gray-500">Required columns: Voornaam, Achternaam, Email</p>
                     <div class="flex justify-end">
                         <button type="submit" class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700">Upload</button>
+                    </div>
+                </form>
+                <!-- Manually create a player -->
+                <p class="block text-sm font-medium text-gray-700 dark:text-gray-200">Manual player creation</p>
+                <form method="POST" id="createPlayerManually" action="{{ route('players.store') }}" class="grid grid-cols-3 gap-3 items-end border-gray-200 pb-3 dark:border-gray-700">
+                    @csrf
+                    <div class="">
+                        <label class="block text-sm">{{ __('firstName') }}</label>
+                        <input type="text" name="name" value="" required class="mt-1 block w-full rounded-md border-2 border-gray-300" />
+                    </div>
+                    <div class="">
+                        <label class="block text-sm">{{ __('lastName') }}</label>
+                        <input type="text" name="name" value="" required class="mt-1 block w-full rounded-md border-2 border-gray-300" />
+                    </div>
+                    <div class="">
+                        <label class="block text-sm">E-mail</label>
+                        <input type="text" name="name" value="" required class="mt-1 block w-full rounded-md border-2 border-gray-300" />
+                    </div>
+                    <div></div>
+                    <div></div>
+                    <div class="flex justify-end">
+                        <button type="submit" form="createPlayerManually" class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700">Create Team</button>
                     </div>
                 </form>
                 <!-- Assign Players to Teams -->

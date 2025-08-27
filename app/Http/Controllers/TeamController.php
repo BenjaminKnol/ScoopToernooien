@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Team;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TeamController extends Controller
 {
@@ -13,7 +14,13 @@ class TeamController extends Controller
      */
     public function myTeam()
     {
-        return view('team.my');
+        $player = Auth::user()->player;
+        $team = $player->team;
+        return view('team.my',
+            [
+                'player' => $player,
+                'team' => $team
+            ]);
     }
 
     /**

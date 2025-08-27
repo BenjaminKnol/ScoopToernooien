@@ -30,12 +30,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::put('/players/{player}', [PlayerAdminController::class, 'update'])->middleware('admin')->name('players.update');
 });
 
-
-
+// Dashboard for admins
 Route::get('dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified', 'admin'])
     ->name('dashboard');
 
+// Settings for users
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
 

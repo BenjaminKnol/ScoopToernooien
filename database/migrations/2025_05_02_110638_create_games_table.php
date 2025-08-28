@@ -10,8 +10,8 @@ return new class extends Migration {
         Schema::create('games', function (Blueprint $table) {
             $table->id();
             $table->string('outcome')->nullable();
-            $table->string('startTime');
-            $table->string('endTime');
+            $table->dateTime('startTime');
+            $table->dateTime('endTime');
             $table->foreignId('team_1_id');
             $table->foreignId('team_2_id');
             $table->integer('field');

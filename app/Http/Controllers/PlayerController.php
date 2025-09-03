@@ -21,7 +21,7 @@ class PlayerController extends Controller
             'firstName' => ['required'],
             'lastName' => ['required'],
             'email' => ['required'],
-            'team_id' => ['nullable', 'exists:teams'],
+            'team_id' => ['nullable', 'exists:teams,id'],
         ]);
 
         $user = User::where('email', $data['email'])->first();

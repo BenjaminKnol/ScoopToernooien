@@ -45,11 +45,14 @@ class PlayerAdminController extends Controller
             // Helper to get column by possible names
             $findIndex = function(array $candidates) use ($map) {
                 foreach ($map as $i => $name) {
-                    if (in_array($name, $candidates, true)) return $i;
+                    foreach ($candidates as $c) {
+                        if (str_contains($name, $c)) {
+                            return $i;
+                        }
+                    }
                 }
                 return null;
             };
-
 
             $idxFirst = $findIndex(['firstname','first_name','first','voornaam']);
             $idxLast  = $findIndex(['lastname','last_name','secondname','second','surname','achternaam']);

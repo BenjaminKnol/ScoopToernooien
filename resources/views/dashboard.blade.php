@@ -235,7 +235,7 @@
                         </select>
                     </div>
                     <div class="flex justify-end col-span-4">
-                        <button type="submit" form="createPlayerManually" class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700">Create Team</button>
+                        <button type="submit" form="createPlayerManually" class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700">Create Player</button>
                     </div>
                 </form>
                 <!-- Assign Players to Teams -->

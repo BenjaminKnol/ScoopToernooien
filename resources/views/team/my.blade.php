@@ -36,7 +36,12 @@
                     <div class="text-zinc-500 dark:text-zinc-400">{{ __('No upcoming games') }}</div>
                 @endif
             </div>
-            {{--            Chat / Posts TODO:IMPLEMENT--}}
+
+            {{--Spelers in je team--}}
+
+            {{--Chat / Posts TODO:IMPLEMENT--}}
+
+            {{--Soundboard met dierengeluiden, prio zeer laag--}}
 
         @endif
 

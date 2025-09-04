@@ -13,7 +13,7 @@ class PlayerAdminController extends Controller
 {
     /**
      * Import players from a CSV file and create corresponding User accounts.
-     * Expected headers (case-insensitive, flexible): firstName, lastName (or secondName), email, dutch options also available
+     * Expected headers (case-insensitive, flexible): firstName, lastName (or secondName), email. Optional: Team (e.g., H1/D3) — gender inferred from Team.
      */
     public function import(Request $request)
     {
@@ -62,10 +62,25 @@ class PlayerAdminController extends Controller
                 throw new \RuntimeException('CSV must contain First Name, Last Name, and Email columns.');
             }
 
+            $idxGender = $findIndex(['gender','geslacht']);
+            $idxTeamCode = $findIndex(['teamcode','team_code','team','groep']);
+
             while (($row = fgetcsv($handle)) !== false) {
                 $first = trim($row[$idxFirst] ?? '');
                 $last  = trim($row[$idxLast] ?? '');
                 $email = trim($row[$idxEmail] ?? '');
+
+                // Read team code from Team column (or aliases) and infer gender from it
+                $teamCodeRaw = $idxTeamCode !== null ? strtoupper(trim($row[$idxTeamCode] ?? '')) : '';
+                $teamCode = preg_match('/^[HD][0-9]+$/', $teamCodeRaw) ? $teamCodeRaw : null;
+
+                if ($teamCode) {
+                    $gender = $teamCode[0];
+                } else {
+                    // Fallback: if a separate gender column exists, use it; otherwise leave null
+                    $genderRaw = $idxGender !== null ? strtoupper(trim($row[$idxGender] ?? '')) : '';
+                    $gender = in_array($genderRaw, ['H','D']) ? $genderRaw : null;
+                }
 
                 if ($first === '' || $last === '' || $email === '') {
                     $skipped++;
@@ -95,12 +110,16 @@ class PlayerAdminController extends Controller
                         'email' => $email,
                         'user_id' => $user->id,
                         'team_id' => null,
+                        'gender' => $gender,
+                        'team_code' => $teamCode,
                     ]);
                 } else {
                     $player->update([
                         'firstName' => $first ?: $player->firstName,
                         'lastName' => $last ?: $player->lastName,
                         'user_id' => $user->id,
+                        'gender' => $gender ?: $player->gender,
+                        'team_code' => $teamCode ?: $player->team_code,
                     ]);
                 }
             }

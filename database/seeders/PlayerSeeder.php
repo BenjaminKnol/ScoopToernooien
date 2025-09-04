@@ -21,6 +21,8 @@ class PlayerSeeder extends Seeder
                     'user_id' => $user->id,
                     'team_id' => $team->id,
                     'email' => $user->email,
+                    'gender' => (rand(0,1) ? 'H' : 'D'),
+                    'team_code' => ((rand(0,1) ? 'H' : 'D') . rand(1,8)),
                 ]);
             }
         }

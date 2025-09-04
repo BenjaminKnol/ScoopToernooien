@@ -14,6 +14,8 @@ class PlayerFactory extends Factory
 
     public function definition(): array
     {
+        $gender = $this->faker->randomElement(['H','D']);
+        $team_code = $gender . $this->faker->numberBetween(1, 8);
         return [
             'firstName' => $this->faker->firstName(),
             'lastName' => $this->faker->lastName(),
@@ -22,6 +24,8 @@ class PlayerFactory extends Factory
             'updated_at' => Carbon::now(),
             'team_id' => null, // can be assigned later
             'user_id' => null,
+            'gender' => $gender,
+            'team_code' => $team_code,
         ];
     }
 }

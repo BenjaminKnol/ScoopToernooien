@@ -50,15 +50,23 @@
                         </div>
                         <div>
                             <label
-                                class="block text-sm font-medium text-gray-700 dark:text-zinc-200">{{ __('Number of fields (from .env)') }}</label>
-                            <input type="number" value="{{ $numberOfFields }}"
-                                   class="mt-1 block w-full border rounded p-2 bg-gray-100" readonly/>
+                                class="block text-sm font-medium text-gray-700 dark:text-zinc-200">{{ __('Number of fields') }}</label>
+                            <input type="number" min="1" max="20" name="number_of_fields"
+                                   value="{{ old('number_of_fields', $defaults['number_of_fields'] ?? $numberOfFields) }}"
+                                   class="mt-1 block w-full border rounded p-2"/>
+                            @error('number_of_fields')
+                            <p class="text-red-600 text-sm">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div>
                             <label
-                                class="block text-sm font-medium text-gray-700 dark:text-zinc-200">{{ __('Available hours (from .env)') }}</label>
-                            <input type="text" value="{{ $availableHours }}"
-                                   class="mt-1 block w-full border rounded p-2 bg-gray-100" readonly/>
+                                class="block text-sm font-medium text-gray-700 dark:text-zinc-200">{{ __('Available hours') }}</label>
+                            <input type="number" step="0.25" min="0.5" max="24" name="available_hours"
+                                   value="{{ old('available_hours', $defaults['available_hours'] ?? $availableHours) }}"
+                                   class="mt-1 block w-full border rounded p-2"/>
+                            @error('available_hours')
+                            <p class="text-red-600 text-sm">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
@@ -92,8 +100,21 @@
                                 : {{ $result['summary']['constraints']['max_consecutive_matches'] }}</li>
                             <li>{{ __('Max idle breaks') }}
                                 : {{ $result['summary']['constraints']['max_idle_breaks'] }}</li>
+                            <li>{{ __('Regeneration attempts used') }}: {{ $result['summary']['regeneration']['attempts_used'] ?? 1 }}</li>
+                            <li>{{ __('Max teams idle in any slot') }}: {{ $result['summary']['regeneration']['max_idle_in_any_slot'] ?? '-' }}</li>
                             @if(!empty($result['summary']['violations']) && ($result['summary']['violations']['unplaced_pairings'] ?? 0) > 0)
                                 <li class="text-red-600 dark:text-red-400">{{ __('Unplaced pairings due to constraints') }}: {{ $result['summary']['violations']['unplaced_pairings'] }}</li>
+                            @endif
+                            @php $suggestions = $result['summary']['suggestions'] ?? []; @endphp
+                            @if(!empty($suggestions))
+                                <li class="mt-2">
+                                    <div class="font-semibold text-zinc-900 dark:text-zinc-100">{{ __('Suggestions') }}</div>
+                                    <ul class="list-disc ml-5 space-y-0.5">
+                                        @foreach($suggestions as $s)
+                                            <li class="text-amber-700 dark:text-amber-400">{{ $s }}</li>
+                                        @endforeach
+                                    </ul>
+                                </li>
                             @endif
                         </ul>
 

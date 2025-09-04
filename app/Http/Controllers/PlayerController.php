@@ -22,6 +22,8 @@ class PlayerController extends Controller
             'lastName' => ['required'],
             'email' => ['required'],
             'team_id' => ['nullable', 'exists:teams,id'],
+            'gender' => ['nullable','in:H,D'],
+            'team_code' => ['nullable','regex:/^[HD][0-9]+$/'],
         ]);
 
         $user = User::where('email', $data['email'])->first();

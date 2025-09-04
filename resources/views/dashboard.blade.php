@@ -168,6 +168,12 @@
                         @method('PUT')
                         <div class="col-span-2">
                             <label class="block text-sm">Name</label>
+                                                        @if(!empty($team->color_hex) || !empty($team->color_name))
+                                                            <div class="mt-1 text-xs text-zinc-700 dark:text-zinc-300 inline-flex items-center gap-2">
+                                                                <span class="inline-block h-3 w-3 rounded-full border border-zinc-300 dark:border-zinc-600" style="background-color: {{ $team->color_hex ?? '#ccc' }}"></span>
+                                                                <span>{{ $team->color_name ?? '' }} @if(!empty($team->color_hex)) ({{ $team->color_hex }}) @endif</span>
+                                                            </div>
+                                                        @endif
                             <input type="text" name="name" value="{{ $team->name }}" required class="mt-1 block w-full rounded-md border-2 border-gray-300" />
                         </div>
                         <div>
@@ -204,14 +210,14 @@
                     @csrf
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Import CSV</label>
                     <input type="file" name="csv" accept=".csv,text/csv" class="mt-1 block w-full rounded-md border-2 border-gray-300" required />
-                    <p class="text-xs text-gray-500">Required columns: Voornaam, Achternaam, Email</p>
+                    <p class="text-xs text-gray-500">Required columns: Voornaam, Achternaam, Email. Optional: Team (e.g., H1 or D3) — gender will be inferred from Team.</p>
                     <div class="flex justify-end">
                         <button type="submit" class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700">Upload</button>
                     </div>
                 </form>
                 <!-- Manually create a player -->
                 <p class="block text-sm font-medium text-gray-700 dark:text-gray-200">Manual player creation</p>
-                <form method="POST" id="createPlayerManually" action="{{ route('players.store') }}" class="grid grid-cols-4 gap-3 items-end border-gray-200 pb-3 dark:border-gray-700">
+                <form method="POST" id="createPlayerManually" action="{{ route('players.store') }}" class="grid grid-cols-6 gap-3 items-end border-gray-200 pb-3 dark:border-gray-700">
                     @csrf
                     <div class="">
                         <label class="block text-sm">{{ __('firstName') }}</label>
@@ -234,7 +240,19 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="flex justify-end col-span-4">
+                    <div class="h-full">
+                        <label class="block text-sm">Gender</label>
+                        <select name="gender" class="mt-1 block w-full rounded-md border-2 border-gray-300">
+                            <option value="">— Unknown —</option>
+                            <option value="H">H (Male)</option>
+                            <option value="D">D (Female)</option>
+                        </select>
+                    </div>
+                    <div class="h-full">
+                        <label class="block text-sm">Team code</label>
+                        <input type="text" name="team_code" value="{{ old('team_code') }}" placeholder="e.g. H1 or D3" class="mt-1 block w-full rounded-md border-2 border-gray-300" />
+                    </div>
+                    <div class="flex justify-end col-span-6">
                         <button type="submit" form="createPlayerManually" class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700">Create Player</button>
                     </div>
                 </form>
@@ -246,6 +264,8 @@
                                 <tr class="text-left border-b border-gray-200 dark:border-gray-700">
                                     <th class="py-2 pr-4">Name</th>
                                     <th class="py-2 pr-4">Email</th>
+                                    <th class="py-2 pr-4">Gender</th>
+                                    <th class="py-2 pr-4">Team code</th>
                                     <th class="py-2 pr-4">Team</th>
                                     <th class="py-2 pr-4 text-right">Actions</th>
                                 </tr>
@@ -253,8 +273,10 @@
                             <tbody>
                                 @forelse($players as $player)
                                     <tr class="border-b border-gray-100 dark:border-gray-800">
-                                        <td class="py-2 pr-4">{{ $player->firstName }} {{ $player->secondName }}</td>
+                                        <td class="py-2 pr-4">{{ $player->firstName }} {{ $player->lastName }}</td>
                                         <td class="py-2 pr-4">{{ $player->email }}</td>
+                                        <td class="py-2 pr-4">{{ $player->gender ?? '—' }}</td>
+                                        <td class="py-2 pr-4">{{ $player->team_code ?? '—' }}</td>
                                         <td class="py-2 pr-4">
                                             <form method="POST" action="{{ route('players.update', $player->id) }}" class="flex items-center gap-2 justify-end md:justify-start">
                                                 @csrf

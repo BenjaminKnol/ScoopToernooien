@@ -17,7 +17,15 @@
                     your team, or provide guidance to implement automatic linking from sign-ups.</p>
             </div>
         @else
-            <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">{{ $team->name }}</h1>
+            <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-3">
+                <span>{{ $team->name }}</span>
+                @if(!empty($team->color_hex) || !empty($team->color_name))
+                    <span class="inline-flex items-center gap-2 text-sm font-normal text-zinc-700 dark:text-zinc-300">
+                        <span class="inline-block h-4 w-4 rounded-full border border-zinc-300 dark:border-zinc-600" style="background-color: {{ $team->color_hex ?? '#ccc' }}"></span>
+                        <span>{{ __('Kleur') }}: {{ $team->color_name ?? __('onbekend') }} @if(!empty($team->color_hex)) ({{ $team->color_hex }}) @endif</span>
+                    </span>
+                @endif
+            </h1>
 
 
             {{--            Upcoming games--}}

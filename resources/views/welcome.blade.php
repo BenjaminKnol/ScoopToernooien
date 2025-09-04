@@ -17,7 +17,12 @@
                     </div>
                     <div class="flex h-full flex-col gap-3 p-4">
                         <div class="flex items-center justify-between">
-                            <div class="truncate font-semibold text-zinc-900 dark:text-zinc-50">{{ $team->name }}</div>
+                            <div class="truncate font-semibold text-zinc-900 dark:text-zinc-50 inline-flex items-center gap-2">
+                                <span class="truncate">{{ $team->name }}</span>
+                                @if(!empty($team->color_hex))
+                                    <span class="inline-block h-3 w-3 rounded-full border border-zinc-300 dark:border-zinc-600" title="{{ $team->color_name ?? '' }}" style="background-color: {{ $team->color_hex }}"></span>
+                                @endif
+                            </div>
                             <div class="mr-16 inline-flex items-center rounded-lg bg-zinc-100 px-2 py-1 text-sm font-medium text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200">
                                 {{ $team->points ?? 0 }} {{ __('pts') }}
                             </div>

@@ -11,8 +11,10 @@
                 @csrf
                 <div class="flex items-center justify-between mb-2">
                     <h2 class="text-lg font-semibold">Create Game</h2>
-                    <a href="{{ route('dashboard.generateSchedule') }}"
-                       class="text-sm text-indigo-600 hover:text-indigo-800">{{ __('Generate schedule') }}</a>
+                    <div class="space-x-3">
+                        <a href="{{ route('dashboard.generateSchedule') }}"
+                           class="text-sm text-indigo-600 hover:text-indigo-800">{{ __('Generate schedule') }}</a>
+                    </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -129,10 +131,10 @@
                 </div>
             </div>
         </div>
-        <!-- Teams: Create -->
+        <!-- Teams: Create & Manage combined -->
         <div class="relative overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700 p-4">
-            <h2 class="mb-4 text-lg font-semibold">Create Team</h2>
-            <form method="POST" action="{{ route('teams.store') }}" class="space-y-3">
+            <h2 class="mb-4 text-lg font-semibold">Teams</h2>
+            <form method="POST" action="{{ route('teams.store') }}" class="space-y-3 mb-6">
                 @csrf
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-200">Name</label>
@@ -156,11 +158,8 @@
                     <button type="submit" class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700">Create Team</button>
                 </div>
             </form>
-        </div>
 
-        <!-- Teams: Manage -->
-        <div class="relative overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700 p-4">
-            <h2 class="mb-4 text-lg font-semibold">Manage Teams</h2>
+            <h3 class="mb-4 text-md font-semibold">Manage Teams</h3>
             <div class="space-y-4">
                 @foreach($teams as $team)
                     <form method="POST" action="{{ route('teams.update', $team->id) }}" class="grid grid-cols-5 gap-3 items-end border-b border-gray-200 pb-3 dark:border-gray-700">
@@ -203,7 +202,10 @@
 
         <!-- Players: Import & Assign -->
         <div class="relative overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700 p-4">
-            <h2 class="mb-4 text-lg font-semibold">Players</h2>
+            <div class="mb-4 flex items-center justify-between">
+                <h2 class="text-lg font-semibold">Players</h2>
+                <a href="{{ route('dashboard.autoAssignTeams') }}" class="text-sm text-indigo-600 hover:text-indigo-800">{{ __('Auto-assign teams (preview)') }}</a>
+            </div>
             <div class="grid gap-6">
                 <!-- Import CSV -->
                 <form method="POST" action="{{ route('players.import') }}" enctype="multipart/form-data" class="space-y-3">
@@ -256,8 +258,8 @@
                         <button type="submit" form="createPlayerManually" class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700">Create Player</button>
                     </div>
                 </form>
-                <!-- Assign Players to Teams -->
-                <div class="">
+                <!-- Auto-assign moved to a dedicated page. Use the link above to preview and apply changes. -->
+
                     <div class="overflow-x-auto">
                         <table class="min-w-full text-sm">
                             <thead>
@@ -281,14 +283,14 @@
                                             <form method="POST" action="{{ route('players.update', $player->id) }}" class="flex items-center gap-2 justify-end md:justify-start">
                                                 @csrf
                                                 @method('PUT')
-                                                <select name="team_id" class="mt-1 block rounded-md border-2 border-gray-300">
+                                                <select name="team_id" class="mt-1 block rounded-md border-2 border-gray-300 autosave-select" onchange="this.form.submit()">
                                                     <option value="">— Unassigned —</option>
                                                     @foreach($teams as $team)
                                                         <option value="{{ $team->id }}" @selected($player->team_id === $team->id)>{{ $team->name }}</option>
                                                     @endforeach
                                                 </select>
-                                                <button type="submit" class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700">Save</button>
-                                                <button type="submit" class="inline-flex justify-center rounded-md bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700" onclick="return confirm('Delete this player?');">Delete</button>
+                                                <button type="submit" class="hidden md:inline-flex justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700">Save</button>
+                                                <button type="submit" form="delete-user-{{ $player->id }}" class="inline-flex justify-center rounded-md bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700" onclick="return confirm('Delete this player?');">Delete</button>
                                             </form>
                                         </td>
                                         <td class="py-2 pr-4 text-right">

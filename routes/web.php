@@ -7,6 +7,7 @@ use App\Http\Controllers\TeamController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\PlayerAdminController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\TeamAssignmentController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Http\Controllers\StandenController;
@@ -46,6 +47,17 @@ Route::get('dashboard/generateSchedule', [ScheduleController::class, 'create'])
 Route::post('dashboard/generateSchedule', [ScheduleController::class, 'store'])
     ->middleware(['auth', 'verified', 'admin'])
     ->name('dashboard.generateSchedule.store');
+
+// Team auto-assignment for admins
+Route::get('dashboard/autoAssignTeams', [TeamAssignmentController::class, 'create'])
+    ->middleware(['auth', 'verified', 'admin'])
+    ->name('dashboard.autoAssignTeams');
+Route::post('dashboard/autoAssignTeams', [TeamAssignmentController::class, 'store'])
+    ->middleware(['auth', 'verified', 'admin'])
+    ->name('dashboard.autoAssignTeams.store');
+Route::post('dashboard/autoAssignTeams/apply', [TeamAssignmentController::class, 'apply'])
+    ->middleware(['auth', 'verified', 'admin'])
+    ->name('dashboard.autoAssignTeams.apply');
 
 // Settings for users
 Route::middleware(['auth'])->group(function () {

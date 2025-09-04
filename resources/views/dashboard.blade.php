@@ -74,7 +74,6 @@
                         <div class="space-y-3 border-b border-gray-200 pb-4 dark:border-gray-700">
                             <div class="flex items-center justify-between text-sm">
                                 <div>{{ optional($game->team1()->first())->name ?? ('Team #'.$game->team_1_id) }} vs {{ optional($game->team2()->first())->name ?? ('Team #'.$game->team_2_id) }}</div>
-                                <div class="text-gray-500">{{ $game->start_time }} - {{ $game->end_time }} · Field {{ $game->field + 1 }}</div>
                             </div>
                             <form method="POST" action="{{ route('games.update', $game->id) }}" class="grid grid-cols-1 md:grid-cols-6 gap-3">
                                 @csrf
@@ -97,11 +96,11 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs text-gray-600">Start</label>
-                                    <input type="text" name="startTime" value="{{ $game->startTime }}" class="mt-1 block w-full rounded-md border-2 border-gray-300" />
+                                    <input type="text" name="startTime" value="{{ \Illuminate\Support\Carbon::hasFormat($game->start_time, 'H:i') ? $game->start_time : (optional(\Illuminate\Support\Carbon::parse($game->start_time, null))->format('H:i') ?? (preg_match('/\\d{2}:\\d{2}/', $game->start_time, $m) ? $m[0] : $game->start_time)) }}" class="mt-1 block w-full rounded-md border-2 border-gray-300" />
                                 </div>
                                 <div>
                                     <label class="block text-xs text-gray-600">End</label>
-                                    <input type="text" name="endTime" value="{{ $game->endTime }}" class="mt-1 block w-full rounded-md border-2 border-gray-300" />
+                                    <input type="text" name="endTime" value="{{ \Illuminate\Support\Carbon::hasFormat($game->end_time, 'H:i') ? $game->end_time : (optional(\Illuminate\Support\Carbon::parse($game->end_time, null))->format('H:i') ?? (preg_match('/\\d{2}:\\d{2}/', $game->end_time, $m) ? $m[0] : $game->end_time)) }}" class="mt-1 block w-full rounded-md border-2 border-gray-300" />
                                 </div>
                                 <div>
                                     <label class="block text-xs text-gray-600">Field</label>

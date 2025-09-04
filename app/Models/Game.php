@@ -11,15 +11,6 @@ class Game extends Model
 
     protected $guarded = [];
 
-    // Deprecated: use applyPointsIfNeeded / revertPointsIfApplied with accepted_outcome
-    public function calculatePoints() : void
-    {
-        if (!isset($this->accepted_outcome)) {
-            return;
-        }
-        $this->applyPointsIfNeeded();
-    }
-
     public function applyPointsIfNeeded(): void
     {
         if ($this->status !== 'accepted' || !$this->accepted_outcome) {

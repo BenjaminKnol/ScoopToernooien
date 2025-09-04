@@ -23,7 +23,7 @@ class AuthenticationTest extends TestCase
         $user = User::factory()->create();
 
         $response = LivewireVolt::test('auth.login')
-            ->set('email', $user->email)
+            ->set('username', $user->name)
             ->set('password', 'password')
             ->call('login');
 
@@ -39,11 +39,11 @@ class AuthenticationTest extends TestCase
         $user = User::factory()->create();
 
         $response = LivewireVolt::test('auth.login')
-            ->set('email', $user->email)
+            ->set('username', $user->name)
             ->set('password', 'wrong-password')
             ->call('login');
 
-        $response->assertHasErrors('email');
+        $response->assertHasErrors('username');
 
         $this->assertGuest();
     }

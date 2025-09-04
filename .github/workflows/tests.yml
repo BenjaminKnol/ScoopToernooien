@@ -25,6 +25,7 @@ jobs:
           php-version: 8.4
           tools: composer:v2
           coverage: xdebug
+          extensions: sqlite3, pdo_sqlite
 
       - name: Setup Node
         uses: actions/setup-node@v4

@@ -30,7 +30,6 @@ class TeamController extends Controller
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'number_of_players' => ['nullable', 'integer', 'min:0'],
             'points' => ['nullable', 'integer', 'min:0'],
             'costume_rating' => ['nullable', 'integer', 'min:0'],
         ]);
@@ -47,7 +46,6 @@ class TeamController extends Controller
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'number_of_players' => ['nullable', 'integer', 'min:0'],
             'points' => ['nullable', 'integer', 'min:0'],
             'costume_rating' => ['nullable', 'integer', 'min:0'],
         ]);

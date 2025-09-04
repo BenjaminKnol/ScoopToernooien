@@ -4,18 +4,17 @@
             {{ session('success') }}
         </x-alert>
     @endif
-    <div class="flex h-full w-full flex-1 flex-col gap-6 rounded-xl mt-2">
-        <div
-            class="relative overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-            <form method="POST" action="{{ route('games.store') }}" class="p-6 space-y-4">
-                @csrf
-                <div class="flex items-center justify-between mb-2">
-                    <h2 class="text-lg font-semibold">Create Game</h2>
-                    <div class="space-x-3">
-                        <a href="{{ route('dashboard.generateSchedule') }}"
-                           class="text-sm text-indigo-600 hover:text-indigo-800">{{ __('Generate schedule') }}</a>
-                    </div>
+    <div class="flex h-full w-full flex-1 flex-col gap-8 rounded-xl mt-2">
+        <div class="relative overflow-hidden rounded-xl mb-4 border border-neutral-200 dark:border-neutral-700 p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-semibold">Games</h2>
+                <div class="space-x-3">
+                    <a href="{{ route('dashboard.generateSchedule') }}"
+                       class="text-sm text-indigo-600 hover:text-indigo-800">{{ __('Generate schedule') }}</a>
                 </div>
+            </div>
+            <form method="POST" action="{{ route('games.store') }}" class="space-y-4 mb-6">
+                @csrf
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="team_1_id" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Team 1</label>
@@ -69,14 +68,9 @@
                     </button>
                 </div>
             </form>
-        </div>
-        <div
-            class="relative h-full flex-1 overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700">
-            <div
-                class="relative overflow-hidden rounded-xl border border-neutral-200 p-4 dark:border-neutral-700">
-                <h2 class="mb-4 text-lg font-semibold">Manage Games</h2>
-                <div class="space-y-6">
-                    @foreach($games as $game)
+            <h3 class="mb-4 text-md font-semibold">Manage Games</h3>
+            <div class="space-y-6">
+                @foreach($games as $game)
                         <div class="space-y-3 border-b border-gray-200 pb-4 dark:border-gray-700">
                             <div class="flex items-center justify-between text-sm">
                                 <div>{{ optional($game->team_1()->first())->name ?? ('Team #'.$game->team_1_id) }} vs {{ optional($game->team_2()->first())->name ?? ('Team #'.$game->team_2_id) }}</div>
@@ -132,7 +126,7 @@
             </div>
         </div>
         <!-- Teams: Create & Manage combined -->
-        <div class="relative overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700 p-4">
+        <div class="relative overflow-hidden rounded-xl border mb-4 border-neutral-200 dark:border-neutral-700 p-4">
             <h2 class="mb-4 text-lg font-semibold">Teams</h2>
             <form method="POST" action="{{ route('teams.store') }}" class="space-y-3 mb-6">
                 @csrf
@@ -141,10 +135,6 @@
                     <input type="text" name="name" required class="mt-1 block w-full rounded-md border-2 border-gray-300" />
                 </div>
                 <div class="grid grid-cols-3 gap-3">
-                    <div>
-                        <label class="block text-sm">Players</label>
-                        <input type="number" name="number_of_players" min="0" class="mt-1 block w-full rounded-md border-2 border-gray-300" />
-                    </div>
                     <div>
                         <label class="block text-sm">Points</label>
                         <input type="number" name="points" min="0" class="mt-1 block w-full rounded-md border-2 border-gray-300" />
@@ -176,10 +166,6 @@
                             <input type="text" name="name" value="{{ $team->name }}" required class="mt-1 block w-full rounded-md border-2 border-gray-300" />
                         </div>
                         <div>
-                            <label class="block text-sm">Players</label>
-                            <input type="number" name="number_of_players" value="{{ $team->number_of_players }}" class="mt-1 block w-full rounded-md border-2 border-gray-300" />
-                        </div>
-                        <div>
                             <label class="block text-sm">Points</label>
                             <input type="number" name="points" value="{{ $team->points }}" class="mt-1 block w-full rounded-md border-2 border-gray-300" />
                         </div>
@@ -196,6 +182,27 @@
                         @csrf
                         @method('DELETE')
                     </form>
+                    <div class="mt-2 mb-4">
+                        <div class="text-sm font-medium mb-1">{{ __('Players in this team') }}</div>
+                        @php $teamPlayers = $team->players; @endphp
+                        @if($teamPlayers->isEmpty())
+                            <div class="text-xs text-gray-500">{{ __('No players in this team.') }}</div>
+                        @else
+                            <ul class="text-sm space-y-1">
+                                @foreach($teamPlayers as $p)
+                                    <li class="flex items-center justify-between">
+                                        <span>{{ $p->firstName }} {{ $p->lastName }} <span class="text-xs text-gray-500">({{ $p->email }})</span></span>
+                                        <form method="POST" action="{{ route('players.update', $p->id) }}" onsubmit="return confirm('{{ __('Remove this player from the team?') }}');">
+                                            @csrf
+                                            @method('PUT')
+                                            <input type="hidden" name="team_id" value="">
+                                            <button type="submit" class="inline-flex justify-center rounded-md bg-amber-600 px-2 py-1 text-xs font-medium text-white hover:bg-amber-700">{{ __('Remove') }}</button>
+                                        </form>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </div>
                 @endforeach
             </div>
         </div>
@@ -258,8 +265,6 @@
                         <button type="submit" form="createPlayerManually" class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700">Create Player</button>
                     </div>
                 </form>
-                <!-- Auto-assign moved to a dedicated page. Use the link above to preview and apply changes. -->
-
                     <div class="overflow-x-auto">
                         <table class="min-w-full text-sm">
                             <thead>
@@ -283,7 +288,7 @@
                                             <form method="POST" action="{{ route('players.update', $player->id) }}" class="flex items-center gap-2 justify-end md:justify-start">
                                                 @csrf
                                                 @method('PUT')
-                                                <select name="team_id" class="mt-1 block rounded-md border-2 border-gray-300 autosave-select" onchange="this.form.submit()">
+                                                <select name="team_id" class="mt-1 block rounded-md border-2 border-gray-300 autosave-select">
                                                     <option value="">— Unassigned —</option>
                                                     @foreach($teams as $team)
                                                         <option value="{{ $team->id }}" @selected($player->team_id === $team->id)>{{ $team->name }}</option>
@@ -326,4 +331,80 @@
             </ul>
         </x-alert>
     @endif
+<script>
+(function(){
+  const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+  function showToast(msg, type='success'){
+    const div = document.createElement('div');
+    div.className = 'fixed top-2 inset-x-0 z-50 mx-auto max-w-3xl rounded-lg p-3 shadow-lg text-sm ' + (type==='error' ? 'bg-red-200 text-red-800' : 'bg-green-200 text-green-800');
+    div.textContent = msg;
+    document.body.appendChild(div);
+    setTimeout(()=>{ div.remove(); }, 3000);
+  }
+  async function ajaxSubmit(form){
+    const url = form.action;
+    let method = (form.querySelector('input[name="_method"]')?.value || form.method || 'POST').toUpperCase();
+    const formData = new FormData(form);
+    // If method spoofing present, send as POST
+    const fetchMethod = method === 'GET' ? 'GET' : 'POST';
+    const res = await fetch(url, {
+      method: fetchMethod,
+      headers: { 'X-CSRF-TOKEN': csrf || '', 'X-Requested-With': 'XMLHttpRequest' },
+      body: fetchMethod==='GET' ? null : formData,
+      credentials: 'same-origin'
+    });
+    // Try to parse JSON; if not, accept HTML redirects but don’t navigate
+    const text = await res.text();
+    // Heuristic: find success message in response
+    let ok = res.ok;
+    if(ok){
+      showToast('Saved successfully');
+    } else {
+      showToast('Failed to save', 'error');
+    }
+    return ok;
+  }
+  // Attach autosave to team selects (players table)
+  document.querySelectorAll('form[action*="/players/"] select.autosave-select').forEach(sel => {
+    sel.addEventListener('change', async (e) => {
+      e.preventDefault();
+      const form = sel.closest('form');
+      try { await ajaxSubmit(form); } catch(err){ showToast('Error', 'error'); }
+    });
+  });
+  // Make selected dashboard management forms AJAX to avoid page reload
+  // Mark forms with data-ajax="true" in markup? We can target known sections:
+  const selectors = [
+    'form[action*="/games/"]',
+    'form[action*="/teams/"]',
+    'form[action*="/players/"]'
+  ];
+  document.querySelectorAll(selectors.join(',')).forEach(form => {
+    // Skip the create forms (they have no id-specific action typically ending with /games or /teams exactly)
+    const isCreate = /\/games$|\/teams$|\/players$/.test(form.action) && !form.querySelector('input[name="_method"][value="PUT"], input[name="_method"][value="DELETE"]');
+    if(isCreate) return;
+    // For delete buttons that reference separate hidden forms, we leave them; hidden forms will also be caught.
+    form.addEventListener('submit', async (e) => {
+      // Only handle if user didn’t request download/navigation
+      e.preventDefault();
+      const submitter = e.submitter;
+      if(submitter && submitter.hasAttribute('form')){
+        // Let linked hidden form handle separately
+      }
+      try {
+        const ok = await ajaxSubmit(form);
+        if(ok){
+          // If this is a delete form, remove the wrapper row/card
+          const isDelete = (form.querySelector('input[name="_method"][value="DELETE"]')!=null);
+          if(isDelete){
+            // remove closest border-b block or table row
+            const row = form.closest('tr, .border-b, .space-y-3');
+            if(row) row.remove();
+          }
+        }
+      } catch(err){ showToast('Error', 'error'); }
+    }, { passive: false });
+  });
+})();
+</script>
 </x-layouts.app.header>

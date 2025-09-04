@@ -78,7 +78,7 @@
                         <div class="space-y-3 border-b border-gray-200 pb-4 dark:border-gray-700">
                             <div class="flex items-center justify-between text-sm">
                                 <div>{{ optional($game->team_1()->first())->name ?? ('Team #'.$game->team_1_id) }} vs {{ optional($game->team_2()->first())->name ?? ('Team #'.$game->team_2_id) }}</div>
-                                <div class="text-gray-500">{{ $game->startTime }} - {{ $game->endTime }} · Field {{ $game->field + 1 }}</div>
+                                <div class="text-gray-500">{{ $game->start_time }} - {{ $game->end_time }} · Field {{ $game->field + 1 }}</div>
                             </div>
                             <form method="POST" action="{{ route('games.update', $game->id) }}" class="grid grid-cols-1 md:grid-cols-6 gap-3">
                                 @csrf

@@ -11,21 +11,58 @@ class Game extends Model
 
     protected $guarded = [];
 
+    // Deprecated: use applyPointsIfNeeded / revertPointsIfApplied with accepted_outcome
     public function calculatePoints() : void
     {
-        $team_1 = Team::where('id', '=', $this->team_1_id)->first();
-        $team_2 = Team::where('id', '=', $this->team_2_id)->first();
-        if(isset($this->outcome)){
-            $outcomes = explode('-', $this->outcome);
-            if($outcomes[0] > $outcomes[1]){
-                $team_1->update(['points' => $team_1->points + 3]);
-            } elseif ($outcomes[0] < $outcomes[1]) {
-                $team_2->update(['points' => $team_2->points + 3]);
-            } elseif ($outcomes[0] === $outcomes[1]) {
-                $team_1->update(['points' => $team_1->points + 1]);
-                $team_2->update(['points' => $team_2->points + 1]);
-            }
+        if (!isset($this->accepted_outcome)) {
+            return;
         }
+        $this->applyPointsIfNeeded();
+    }
+
+    public function applyPointsIfNeeded(): void
+    {
+        if ($this->status !== 'accepted' || !$this->accepted_outcome) {
+            return;
+        }
+        if ($this->points_applied) {
+            return; // already applied
+        }
+        [$a, $b] = array_map('intval', explode('-', $this->accepted_outcome));
+        $team1 = Team::findOrFail($this->team_1_id);
+        $team2 = Team::findOrFail($this->team_2_id);
+
+        if ($a > $b) {
+            $team1->increment('points', 3);
+        } elseif ($a < $b) {
+            $team2->increment('points', 3);
+        } else {
+            $team1->increment('points', 1);
+            $team2->increment('points', 1);
+        }
+
+        $this->forceFill(['points_applied' => true])->save();
+    }
+
+    public function revertPointsIfApplied(): void
+    {
+        if (!$this->points_applied || !$this->accepted_outcome) {
+            return;
+        }
+        [$a, $b] = array_map('intval', explode('-', $this->accepted_outcome));
+        $team1 = Team::findOrFail($this->team_1_id);
+        $team2 = Team::findOrFail($this->team_2_id);
+
+        if ($a > $b) {
+            $team1->decrement('points', 3);
+        } elseif ($a < $b) {
+            $team2->decrement('points', 3);
+        } else {
+            $team1->decrement('points', 1);
+            $team2->decrement('points', 1);
+        }
+
+        $this->forceFill(['points_applied' => false])->save();
     }
 
     public function opponent(int $id)
@@ -38,13 +75,13 @@ class Game extends Model
         }
     }
 
-    public function team_1()
+    public function team1()
     {
-        return $this->hasOne(Team::class, 'id', 'team_1_id');
+        return $this->belongsTo(Team::class, 'team_1_id');
     }
 
-    public function team_2()
+    public function team2()
     {
-        return $this->hasOne(Team::class, 'id', 'team_2_id');
+        return $this->belongsTo(Team::class, 'team_2_id');
     }
 }

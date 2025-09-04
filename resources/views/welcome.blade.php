@@ -25,12 +25,12 @@
 
                         <div class="rounded-lg border border-zinc-200 p-3 text-xs text-zinc-700 dark:border-zinc-700 dark:text-zinc-300">
                             <div class="mb-1 font-medium text-zinc-900 dark:text-zinc-100">{{ __('Upcoming') }}</div>
-                            @php $games = $team->upcomingGames()->sortBy('startTime')->take(3); @endphp
+                            @php $games = $team->upcomingGames()->take(3); @endphp
                             @if($games->count() > 0)
                                 <ul class="space-y-1.5">
                                     @foreach($games as $game)
                                         <li class="flex items-center justify-between">
-                                            <span class="truncate">{{ $game->startTime }} · {{ $game->opponent($team->id)->name }}</span>
+                                            <span class="truncate">{{ $game->start_time }} · {{ $game->opponent($team->id)->name }}</span>
                                             <span class="text-zinc-500 dark:text-zinc-400">{{ __('Field :n', ['n' => $game->field]) }}</span>
                                         </li>
                                     @endforeach

@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('teams', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->integer('points')->nullable();
-            $table->integer('costume_rating')->nullable();;
+            $table->integer('points')->default(0);
+            $table->integer('costume_rating')->nullable();
             $table->smallInteger('number_of_players')->nullable();
-            $table->string('poule')->nullable();;
+            $table->string('poule')->nullable();
             $table->timestamps();
         });
     }

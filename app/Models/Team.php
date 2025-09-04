@@ -16,7 +16,13 @@ class Team extends Model
 
     public function upcomingGames() : Collection
     {
-        return Game::where('team_1_id', '=', $this->id)->orWhere('team_2_id', '=', $this->id)->get();
+        return Game::where(function($q) {
+                $q->where('team_1_id', $this->id)
+                  ->orWhere('team_2_id', $this->id);
+            })
+            ->where('start_time', '>=', now())
+            ->orderBy('start_time')
+            ->get();
     }
 
     public function games1() : Relation

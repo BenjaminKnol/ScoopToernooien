@@ -64,3 +64,31 @@ select:focus[data-flux-control] {
 /* \[:where(&)\]:size-4 {
     @apply size-4;
 } */
+
+/* Dark mode form control fixes: ensure readable text and backgrounds */
+@layer base {
+  input,
+  select,
+  textarea {
+    @apply text-zinc-900 bg-white placeholder-zinc-400;
+  }
+  .dark input,
+  .dark select,
+  .dark textarea {
+    @apply text-zinc-100 bg-zinc-800 placeholder-zinc-500 border-zinc-700;
+  }
+  /* Readonly/disabled states */
+  input[readonly], select[readonly], textarea[readonly],
+  input:disabled, select:disabled, textarea:disabled {
+    @apply bg-zinc-100 text-zinc-600 dark:bg-zinc-900 dark:text-zinc-400;
+  }
+  /* Error state utility (if border-red-600 applied, ensure contrast in dark) */
+  .dark .border-red-600 { @apply border-red-500; }
+
+  /* Ensure dropdown options are legible in dark mode */
+  .dark select option { @apply bg-zinc-800 text-zinc-100; }
+
+  /* Make schedule distribution segments more visible */
+  .timeline-bar { @apply relative h-3 w-full rounded overflow-hidden bg-green-500/30 dark:bg-green-600/30 border border-zinc-200 dark:border-zinc-700; }
+  .timeline-seg { @apply absolute top-0 h-full bg-red-500 dark:bg-red-600; min-width: 2px; }
+}

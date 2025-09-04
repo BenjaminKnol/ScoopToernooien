@@ -17,8 +17,8 @@ class GameController extends Controller
     {
         $data = $request->validate([
             'outcome' => 'nullable|string',
-            'startTime' => ['required', 'string'],
-            'endTime' => ['required', 'string'],
+            'start_time' => ['required', 'string'],
+            'end_time' => ['required', 'string'],
             'team_1_id' => ['required', 'integer'],
             'team_2_id' => ['required', 'integer', 'different:team_1_id'],
             'field' => ['required', 'integer'],
@@ -38,8 +38,8 @@ class GameController extends Controller
     {
         $data = $request->validate([
             'outcome' => ['nullable', 'string'],
-            'startTime' => ['sometimes', 'string'],
-            'endTime' => ['sometimes', 'string'],
+            'start_time' => ['sometimes', 'string'],
+            'end_time' => ['sometimes', 'string'],
             'team_1_id' => ['sometimes'],
             'team_2_id' => ['sometimes'],
             'field' => ['sometimes', 'numeric'],

@@ -22,12 +22,12 @@
 
             {{--            Upcoming games--}}
             <div class="rounded-xl border border-neutral-300 dark:border-neutral-700 p-4 bg-white dark:bg-neutral-800">
-                @php $games = $team->upcomingGames()->sortBy('startTime'); @endphp
+                @php $games = $team->upcomingGames(); @endphp
                 @if($games->count() > 0)
                     <ul class="space-y-1.5">
                         @foreach($games as $game)
                             <li class="flex items-center justify-between">
-                                <span class="truncate">{{ $game->startTime }} · {{ $game->opponent($team->id)->name }}</span>
+                                <span class="truncate">{{ $game->start_time }} · {{ $game->opponent($team->id)->name }}</span>
                                 <span class="text-zinc-500 dark:text-zinc-400">{{ __('Field :n', ['n' => $game->field]) }}</span>
                             </li>
                         @endforeach

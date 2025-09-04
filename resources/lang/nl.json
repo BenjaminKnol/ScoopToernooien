@@ -9,6 +9,7 @@
     "Account": "Account",
     "All teams in one group. Sorted by points.": "Alle teams in één poule. Gesorteerd op punten.",
     "Upcoming": "Aankomende",
+    "Upcoming games": "Aankomende wedstrijden",
     "No upcoming games": "Geen aankomende wedstrijden",
     "Field :n": "Veld :n",
     "pts": "ptn",
@@ -33,5 +34,11 @@
     "No posts yet.": "Nog geen berichten.",
     "No replies yet.": "Nog geen reacties.",
     "Write a reply...": "Schrijf een reactie...",
-    "Reply": "Reageren"
+    "Reply": "Reageren",
+    "Report result": "Uitslag doorgeven",
+    "No games to report yet.": "Geen wedstrijden om door te geven.",
+    "Submit": "Verzenden",
+    "Result": "Uitslag",
+    "You can only report a result after the game has started.": "Je kunt een uitslag pas doorgeven nadat de wedstrijd is begonnen.",
+    "Upcoming games": "Aankomende wedstrijden"
 }

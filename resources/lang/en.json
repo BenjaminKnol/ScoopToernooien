@@ -9,6 +9,7 @@
     "Account": "Account",
     "All teams in one group. Sorted by points.": "All teams in one group. Sorted by points.",
     "Upcoming": "Upcoming",
+    "Upcoming games": "Upcoming games",
     "No upcoming games": "No upcoming games",
     "Field :n": "Field :n",
     "pts": "pts",
@@ -33,5 +34,11 @@
     "No posts yet.": "No posts yet.",
     "No replies yet.": "No replies yet.",
     "Write a reply...": "Write a reply...",
-    "Reply": "Reply"
+    "Reply": "Reply",
+    "Report result": "Report result",
+    "No games to report yet.": "No games to report yet.",
+    "Submit": "Submit",
+    "Result": "Result",
+    "You can only report a result after the game has started.": "You can only report a result after the game has started.",
+    "Upcoming games": "Upcoming games"
 }

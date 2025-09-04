@@ -30,7 +30,7 @@
 
             {{--            Upcoming games--}}
             <div class="rounded-xl border border-neutral-300 dark:border-neutral-700 p-4 bg-white dark:bg-neutral-800">
-                <div class="mb-2 pb-1 border-b border-neutral-200 dark:border-neutral-700 font-medium">{{ __('Upcoming') }}</div>
+                <div class="mb-2 pb-1 border-b border-neutral-200 dark:border-neutral-700 font-medium">{{ __('Upcoming games') }}</div>
                 @php $games = $team->upcomingGames(); @endphp
                 @if($games->count() > 0)
                     <ul class="space-y-1.5">
@@ -46,6 +46,44 @@
                 @endif
             </div>
 
+            {{-- Report past game result --}}
+            <div class="rounded-xl border border-neutral-300 dark:border-neutral-700 p-4 bg-white dark:bg-neutral-800">
+                <div class="mb-2 pb-1 border-b border-neutral-200 dark:border-neutral-700 font-medium">{{ __('Report result') }}</div>
+                @php
+                    $pastGames = \App\Models\Game::where(function($q) use($team){ $q->where('team_1_id',$team->id)->orWhere('team_2_id',$team->id); })
+                        ->where('start_time','<=', now())
+                        ->orderByDesc('start_time')
+                        ->take(10)
+                        ->get();
+                @endphp
+                @if($pastGames->isEmpty())
+                    <div class="text-zinc-500 dark:text-zinc-400 text-sm">{{ __('No games to report yet.') }}</div>
+                @else
+                    <ul class="space-y-3">
+                        @foreach($pastGames as $g)
+                            <li class="border border-neutral-200 dark:border-neutral-700 rounded-md p-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="text-sm">
+                                        <span class="font-medium">{{ \Illuminate\Support\Carbon::hasFormat($g->start_time, 'H:i') ? $g->start_time : (optional(\Illuminate\Support\Carbon::parse($g->start_time, null))->format('H:i') ?? (preg_match('/\\d{2}:\\d{2}/', $g->start_time, $m) ? $m[0] : $g->start_time)) }}</span>
+                                        · {{ $g->opponent($team->id)->name }}
+                                        <span class="text-zinc-500">({{ __('Field :n', ['n' => $g->field + 1]) }})</span>
+                                    </div>
+                                    @if($g->accepted_outcome)
+                                        <div class="text-xs text-green-700 dark:text-green-400">{{ __('Result') }}: {{ $g->accepted_outcome }}</div>
+                                    @else
+                                        <form method="POST" action="{{ route('team.games.report', $g) }}" class="flex items-center gap-2">
+                                            @csrf
+                                            <input type="text" name="score" placeholder="0-0" pattern="\\d+\\s*-\\s*\\d+" required class="w-20 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2 py-1 text-sm" />
+                                            <button type="submit" class="inline-flex items-center rounded-md bg-indigo-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-indigo-700">{{ __('Submit') }}</button>
+                                        </form>
+                                    @endif
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </div>
+
             {{--Spelers in je team--}}
             <div class="rounded-xl border border-neutral-300 dark:border-neutral-700 p-4 bg-white dark:bg-neutral-800">
                 <div class="mb-2 pb-1 border-b border-neutral-200 dark:border-neutral-700 font-medium">{{ __('Players in your team') }}</div>
@@ -56,7 +94,8 @@
                     <ul class="space-y-1.5 text-sm">
                         @foreach($teamPlayers as $p)
                             <li class="flex items-center justify-between">
-                                <span>{{ $p->firstName }} {{ $p->lastName }} <span class="text-xs text-zinc-500">{{ $p->email }}</span></span>
+                                <span>{{ $p->firstName }}</span>
+                                <span class="text-xs text-zinc-500">{{ $p->team_code }}</span>
                             </li>
                         @endforeach
                     </ul>

@@ -17,5 +17,21 @@
     "Dutch": "Dutch",
     "Manage in Settings": "Manage in Settings",
     "firstName": "First name",
-    "lastName": "Last name"
+    "lastName": "Last name",
+    "How to read this page": "How to read this page",
+    "Times are shown as HH:mm (24h).": "Times are shown as HH:mm (24h).",
+    "Each item shows Start time · Opponent.": "Each item shows Start time · Opponent.",
+    "Field numbers start at 1.": "Field numbers start at 1.",
+    "The colored dot next to the team name indicates your team color.": "The colored dot next to the team name indicates your team color.",
+    "Players in your team": "Players in your team",
+    "No players in this team.": "No players in this team.",
+    "Team posts": "Team posts",
+    "This section will allow team chat/posts in a future update.": "This section will allow team chat/posts in a future update.",
+    "Title": "Title",
+    "Write a message to your team...": "Write a message to your team...",
+    "Post": "Post",
+    "No posts yet.": "No posts yet.",
+    "No replies yet.": "No replies yet.",
+    "Write a reply...": "Write a reply...",
+    "Reply": "Reply"
 }

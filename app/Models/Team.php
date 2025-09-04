@@ -39,4 +39,9 @@ class Team extends Model
     {
         return $this->hasMany(Player::class);
     }
+
+    public function postThreads(): Relation
+    {
+        return $this->hasMany(\App\Models\TeamPostThread::class);
+    }
 }

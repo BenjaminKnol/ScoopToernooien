@@ -23,6 +23,10 @@ Route::group(['middleware' => 'auth'], function () {
         ->middleware('no-admin-on-team')
         ->name('my-team');
 
+    // Team posts
+    Route::post('/team/posts', [\App\Http\Controllers\TeamPostController::class, 'storeThread'])->name('team.posts.store');
+    Route::post('/team/posts/{thread}/reply', [\App\Http\Controllers\TeamPostController::class, 'storeReply'])->name('team.posts.reply');
+
     // Team admin (CRUD from dashboard)
     Route::post('/teams', [\App\Http\Controllers\TeamController::class, 'store'])->middleware('admin')->name('teams.store');
     Route::put('/teams/{team}', [\App\Http\Controllers\TeamController::class, 'update'])->middleware('admin')->name('teams.update');

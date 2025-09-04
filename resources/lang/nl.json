@@ -17,5 +17,21 @@
     "Dutch": "Nederlands",
     "Manage in Settings": "Beheer in Instellingen",
     "firstName": "Voornaam",
-    "lastName": "Achternaam"
+    "lastName": "Achternaam",
+    "How to read this page": "Uitleg van deze pagina",
+    "Times are shown as HH:mm (24h).": "Tijden worden getoond als HH:mm (24u).",
+    "Each item shows Start time · Opponent.": "Elke regel toont Starttijd · Tegenstander.",
+    "Field numbers start at 1.": "Veldnummers beginnen bij 1.",
+    "The colored dot next to the team name indicates your team color.": "Het gekleurde bolletje naast de teamnaam is jullie teamkleur.",
+    "Players in your team": "Spelers in je team",
+    "No players in this team.": "Geen spelers in dit team.",
+    "Team posts": "Teamberichten",
+    "This section will allow team chat/posts in a future update.": "Hier komt later teamchat/berichten.",
+    "Title": "Titel",
+    "Write a message to your team...": "Schrijf een bericht aan je team...",
+    "Post": "Plaatsen",
+    "No posts yet.": "Nog geen berichten.",
+    "No replies yet.": "Nog geen reacties.",
+    "Write a reply...": "Schrijf een reactie...",
+    "Reply": "Reageren"
 }

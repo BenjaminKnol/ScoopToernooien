@@ -17,12 +17,12 @@
                     your team, or provide guidance to implement automatic linking from sign-ups.</p>
             </div>
         @else
-            <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-3">
+            <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100 flex items-center gap-3 border-b border-neutral-200 dark:border-neutral-700 pb-2">
                 <span>{{ $team->name }}</span>
                 @if(!empty($team->color_hex) || !empty($team->color_name))
                     <span class="inline-flex items-center gap-2 text-sm font-normal text-zinc-700 dark:text-zinc-300">
                         <span class="inline-block h-4 w-4 rounded-full border border-zinc-300 dark:border-zinc-600" style="background-color: {{ $team->color_hex ?? '#ccc' }}"></span>
-                        <span>{{ __('Kleur') }}: {{ $team->color_name ?? __('onbekend') }} @if(!empty($team->color_hex)) ({{ $team->color_hex }}) @endif</span>
+                        <span>{{ __('Kleur') }}: {{ $team->color_name ?? __('onbekend') }}</span>
                     </span>
                 @endif
             </h1>
@@ -30,13 +30,14 @@
 
             {{--            Upcoming games--}}
             <div class="rounded-xl border border-neutral-300 dark:border-neutral-700 p-4 bg-white dark:bg-neutral-800">
+                <div class="mb-2 pb-1 border-b border-neutral-200 dark:border-neutral-700 font-medium">{{ __('Upcoming') }}</div>
                 @php $games = $team->upcomingGames(); @endphp
                 @if($games->count() > 0)
                     <ul class="space-y-1.5">
                         @foreach($games as $game)
                             <li class="flex items-center justify-between">
-                                <span class="truncate">{{ $game->start_time }} · {{ $game->opponent($team->id)->name }}</span>
-                                <span class="text-zinc-500 dark:text-zinc-400">{{ __('Field :n', ['n' => $game->field]) }}</span>
+                                <span class="truncate">{{ \Illuminate\Support\Carbon::hasFormat($game->start_time, 'H:i') ? $game->start_time : (optional(\Illuminate\Support\Carbon::parse($game->start_time, null))->format('H:i') ?? (preg_match('/\\d{2}:\\d{2}/', $game->start_time, $m) ? $m[0] : $game->start_time)) }} · {{ $game->opponent($team->id)->name }}</span>
+                                <span class="text-zinc-500 dark:text-zinc-400">{{ __('Field :n', ['n' => $game->field + 1]) }}</span>
                             </li>
                         @endforeach
                     </ul>
@@ -46,10 +47,73 @@
             </div>
 
             {{--Spelers in je team--}}
+            <div class="rounded-xl border border-neutral-300 dark:border-neutral-700 p-4 bg-white dark:bg-neutral-800">
+                <div class="mb-2 pb-1 border-b border-neutral-200 dark:border-neutral-700 font-medium">{{ __('Players in your team') }}</div>
+                @php $teamPlayers = $team->players; @endphp
+                @if($teamPlayers->isEmpty())
+                    <div class="text-zinc-500 dark:text-zinc-400 text-sm">{{ __('No players in this team.') }}</div>
+                @else
+                    <ul class="space-y-1.5 text-sm">
+                        @foreach($teamPlayers as $p)
+                            <li class="flex items-center justify-between">
+                                <span>{{ $p->firstName }} {{ $p->lastName }} <span class="text-xs text-zinc-500">{{ $p->email }}</span></span>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </div>
 
-            {{--Chat / Posts TODO:IMPLEMENT--}}
+            {{--Chat / Posts IMPLEMENTED--}}
+            <div class="rounded-xl border border-neutral-300 dark:border-neutral-700 p-4 bg-white dark:bg-neutral-800">
+                <div class="mb-2 pb-1 border-b border-neutral-200 dark:border-neutral-700 font-medium">{{ __('Team posts') }}</div>
 
-            {{--Soundboard met dierengeluiden, prio zeer laag--}}
+                {{-- New thread form --}}
+                <form method="POST" action="{{ route('team.posts.store') }}" class="space-y-2 mb-4">
+                    @csrf
+                    <div class="grid grid-cols-1 gap-2">
+                        <input type="text" name="title" maxlength="120" placeholder="{{ __('Title') }}" required class="block w-full rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm" />
+                        <textarea name="body" rows="3" maxlength="5000" placeholder="{{ __('Write a message to your team...') }}" required class="block w-full rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm"></textarea>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit" class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700">{{ __('Post') }}</button>
+                    </div>
+                </form>
+
+                @php $threads = $team->postThreads()->with(['author','replies.author'])->orderByDesc('created_at')->take(10)->get(); @endphp
+                @if($threads->isEmpty())
+                    <div class="text-zinc-500 dark:text-zinc-400 text-sm">{{ __('No posts yet.') }}</div>
+                @else
+                    <ul class="space-y-4">
+                        @foreach($threads as $thread)
+                            <li class="border border-neutral-200 dark:border-neutral-700 rounded-md">
+                                <div class="p-3 border-b border-neutral-200 dark:border-neutral-700">
+                                    <div class="font-medium">{{ $thread->title }}</div>
+                                    <div class="text-sm text-zinc-700 dark:text-zinc-300 whitespace-pre-line">{{ $thread->body }}</div>
+                                    <div class="mt-1 text-xs text-zinc-500">{{ $thread->author?->firstName }} {{ $thread->author?->lastName }} · {{ $thread->created_at->diffForHumans() }}</div>
+                                </div>
+                                <div class="p-3 space-y-3">
+                                    @forelse($thread->replies as $reply)
+                                        <div class="text-sm">
+                                            <div class="whitespace-pre-line">{{ $reply->body }}</div>
+                                            <div class="mt-0.5 text-xs text-zinc-500">— {{ $reply->author?->firstName }} {{ $reply->author?->lastName }} · {{ $reply->created_at->diffForHumans() }}</div>
+                                        </div>
+                                    @empty
+                                        <div class="text-xs text-zinc-500">{{ __('No replies yet.') }}</div>
+                                    @endforelse
+
+                                    <form method="POST" action="{{ route('team.posts.reply', $thread) }}" class="pt-1 border-t border-neutral-200 dark:border-neutral-700">
+                                        @csrf
+                                        <div class="mt-2 flex gap-2">
+                                            <textarea name="body" rows="2" maxlength="3000" placeholder="{{ __('Write a reply...') }}" required class="flex-1 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm"></textarea>
+                                            <button type="submit" class="self-start inline-flex items-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-700">{{ __('Reply') }}</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
+            </div>
 
         @endif
 

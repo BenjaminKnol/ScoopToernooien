@@ -47,6 +47,9 @@ Route::get('dashboard/generateSchedule', [ScheduleController::class, 'create'])
 Route::post('dashboard/generateSchedule', [ScheduleController::class, 'store'])
     ->middleware(['auth', 'verified', 'admin'])
     ->name('dashboard.generateSchedule.store');
+Route::post('dashboard/generateSchedule/apply', [ScheduleController::class, 'apply'])
+    ->middleware(['auth', 'verified', 'admin'])
+    ->name('dashboard.generateSchedule.apply');
 
 // Team auto-assignment for admins
 Route::get('dashboard/autoAssignTeams', [TeamAssignmentController::class, 'create'])

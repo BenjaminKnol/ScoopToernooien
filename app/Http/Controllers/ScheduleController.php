@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Team;
+use App\Models\Game;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ScheduleController extends Controller
 {
@@ -454,5 +456,53 @@ class ScheduleController extends Controller
             }
         }
         return $pairs;
+    }
+
+    public function apply(Request $request)
+    {
+        $data = $request->validate([
+            'games' => ['required', 'string'],
+            'clear_existing' => ['nullable', 'boolean'],
+        ]);
+        $clear = (bool)($data['clear_existing'] ?? false);
+        $decoded = json_decode($data['games'], true);
+        if (!is_array($decoded)) {
+            return back()->withErrors(['games' => __('Invalid games payload.')]);
+        }
+        // Basic shape validation and normalize field to int
+        $toInsert = [];
+        foreach ($decoded as $row) {
+            if (!is_array($row)) { continue; }
+            $t1 = (int)($row['team_1_id'] ?? 0);
+            $t2 = (int)($row['team_2_id'] ?? 0);
+            $start = (string)($row['start_time'] ?? '');
+            $end = (string)($row['end_time'] ?? '');
+            $field = (int)($row['field'] ?? 0);
+            if ($t1 && $t2 && $start && $end) {
+                $toInsert[] = [
+                    'team_1_id' => $t1,
+                    'team_2_id' => $t2,
+                    'start_time' => $start,
+                    'end_time' => $end,
+                    'field' => $field,
+                ];
+            }
+        }
+        if (empty($toInsert)) {
+            return back()->withErrors(['games' => __('There are no matches to apply.')]);
+        }
+
+        DB::transaction(function () use ($clear, $toInsert) {
+            if ($clear) {
+                // Remove all existing games before inserting the new schedule
+                \App\Models\Game::query()->delete();
+            }
+            // Bulk insert; if needed, chunk to avoid huge payloads
+            foreach (array_chunk($toInsert, 500) as $chunk) {
+                \App\Models\Game::insert($chunk);
+            }
+        });
+
+        return redirect()->route('dashboard')->with('success', __('Schedule applied and saved successfully.'));
     }
 }

@@ -227,6 +227,38 @@
                                 </div>
                             </div>
                         @endif
+
+                        <form method="POST" action="{{ route('dashboard.generateSchedule.apply') }}" class="mt-6">
+                            @csrf
+                            @php
+                                // Build the list of games to persist from the generated schedule
+                                $gamesToApply = [];
+                                foreach (($result['schedule'] ?? []) as $fieldNum => $slots) {
+                                    foreach ($slots as $slot) {
+                                        if (!empty($slot['team_1_id']) && !empty($slot['team_2_id'])) {
+                                            $gamesToApply[] = [
+                                                'team_1_id' => $slot['team_1_id'],
+                                                'team_2_id' => $slot['team_2_id'],
+                                                'start_time' => $slot['start'],
+                                                'end_time' => $slot['end'],
+                                                // store zero-based field index to match dashboard display (+1 shown there)
+                                                'field' => max(0, (int)$fieldNum - 1),
+                                            ];
+                                        }
+                                    }
+                                }
+                            @endphp
+                            <input type="hidden" name="games" value='@json($gamesToApply)'>
+                            <div class="flex items-center gap-3">
+                                <label class="inline-flex items-center text-xs text-zinc-700 dark:text-zinc-300">
+                                    <input type="checkbox" name="clear_existing" value="1" checked class="mr-2">
+                                    {{ __('Remove existing games first') }}
+                                </label>
+                                <button type="submit" class="inline-flex justify-center rounded-md bg-green-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-green-700">
+                                    {{ __('Apply and save schedule') }}
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 @endif
             </div>

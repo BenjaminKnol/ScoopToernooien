@@ -92,6 +92,9 @@
                                 : {{ $result['summary']['constraints']['max_consecutive_matches'] }}</li>
                             <li>{{ __('Max idle breaks') }}
                                 : {{ $result['summary']['constraints']['max_idle_breaks'] }}</li>
+                            @if(!empty($result['summary']['violations']) && ($result['summary']['violations']['unplaced_pairings'] ?? 0) > 0)
+                                <li class="text-red-600 dark:text-red-400">{{ __('Unplaced pairings due to constraints') }}: {{ $result['summary']['violations']['unplaced_pairings'] }}</li>
+                            @endif
                         </ul>
 
                         @if(empty($result['schedule']))
@@ -114,6 +117,9 @@
                                                                 · <span>{{ $slot['team_1_name'] }}</span>
                                                                 <span class="text-zinc-400">vs</span>
                                                                 <span>{{ $slot['team_2_name'] }}</span>
+                                                                @if(!empty($slot['violations']['repeat_opponent']))
+                                                                    <span class="ml-2 inline-block text-[10px] px-1.5 py-0.5 rounded bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">{{ __('repeat') }}</span>
+                                                                @endif
                                                             @else
                                                                 <span class="text-zinc-500">{{ __('(empty slot)') }}</span>
                                                             @endif
@@ -128,6 +134,12 @@
 
                             <div class="mt-8">
                                 <h4 class="text-md font-semibold mb-2 text-zinc-900 dark:text-zinc-100">{{ __('Team distribution (matrix)') }}</h4>
+                                <div class="mb-2 text-xs text-zinc-700 dark:text-zinc-300 space-x-3">
+                                    <span class="inline-flex items-center"><span class="inline-block w-3 h-3 bg-red-500 dark:bg-red-600 mr-1"></span>{{ __('Game') }}</span>
+                                    <span class="inline-flex items-center"><span class="inline-block w-3 h-3 bg-green-500/40 dark:bg-green-600/40 mr-1"></span>{{ __('Break') }}</span>
+                                    <span class="inline-flex items-center"><span class="inline-block w-3 h-3 bg-red-500 dark:bg-red-600 ring-2 ring-orange-500 mr-1"></span>{{ __('Repeat opponent early') }}</span>
+                                    <span class="inline-flex items-center"><span class="inline-block w-3 h-3 bg-green-500/40 dark:bg-green-600/40 ring-2 ring-amber-500 mr-1"></span>{{ __('Over max breaks') }}</span>
+                                </div>
                                 <div class="overflow-x-auto">
                                     <table class="min-w-full border border-zinc-200 dark:border-zinc-700 text-xs">
                                         <thead class="bg-zinc-50 dark:bg-zinc-800">
@@ -136,6 +148,7 @@
                                             @foreach($result['slot_starts'] as $start => $hm)
                                                 <th class="border-b border-l border-zinc-200 dark:border-zinc-700 px-2 py-1 text-zinc-700 dark:text-zinc-200 whitespace-nowrap">{{ $hm }}</th>
                                             @endforeach
+                                            <th class="border-b border-l border-zinc-200 dark:border-zinc-700 px-2 py-1 text-zinc-700 dark:text-zinc-200 whitespace-nowrap">{{ __('Games') }}</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -143,11 +156,49 @@
                                             <tr>
                                                 <td class="sticky left-0 z-10 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-700 px-2 py-1 text-zinc-800 dark:text-zinc-200 whitespace-nowrap">{{ $team['name'] }}</td>
                                                 @foreach($result['slot_starts'] as $start => $hm)
-                                                    @php $plays = $result['team_matrix'][$teamId][$start] ?? false; @endphp
+                                                    @php
+                                                        $plays = $result['team_matrix'][$teamId][$start] ?? false;
+                                                        $flags = $result['team_cell_flags'][$teamId][$start] ?? [];
+                                                        $class = $plays ? 'bg-red-500 dark:bg-red-600' : 'bg-green-500/40 dark:bg-green-600/40';
+                                                        if (!empty($flags['repeat_opponent'])) { $class .= ' ring-2 ring-orange-500'; }
+                                                        if (!empty($flags['over_breaks'])) { $class .= ' ring-2 ring-amber-500'; }
+                                                    @endphp
                                                     <td class="border-t border-l border-zinc-200 dark:border-zinc-700">
-                                                        <div class="h-4 w-6 md:w-8 lg:w-10 {{ $plays ? 'bg-red-500 dark:bg-red-600' : 'bg-green-500/40 dark:bg-green-600/40' }}"></div>
+                                                        <div class="h-4 w-full {{ $class }}"></div>
                                                     </td>
                                                 @endforeach
+                                                <td class="border-t border-l border-zinc-200 dark:border-zinc-700 text-right px-2 py-1 text-zinc-700 dark:text-zinc-300">{{ $team['count'] }}</td>
+                                            </tr>
+                                        @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="mt-8">
+                                <h4 class="text-md font-semibold mb-2 text-zinc-900 dark:text-zinc-100">{{ __('Field utilization (matrix)') }}</h4>
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full border border-zinc-200 dark:border-zinc-700 text-xs">
+                                        <thead class="bg-zinc-50 dark:bg-zinc-800">
+                                        <tr>
+                                            <th class="sticky left-0 z-10 bg-zinc-50 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700 px-2 py-1 text-left text-zinc-700 dark:text-zinc-200">{{ __('Field') }}</th>
+                                            @foreach($result['slot_starts'] as $start => $hm)
+                                                <th class="border-b border-l border-zinc-200 dark:border-zinc-700 px-2 py-1 text-zinc-700 dark:text-zinc-200 whitespace-nowrap">{{ $hm }}</th>
+                                            @endforeach
+                                            <th class="border-b border-l border-zinc-200 dark:border-zinc-700 px-2 py-1 text-zinc-700 dark:text-zinc-200 whitespace-nowrap">{{ __('Used') }}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        @foreach(($result['field_matrix'] ?? []) as $field => $starts)
+                                            <tr>
+                                                <td class="sticky left-0 z-10 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-700 px-2 py-1 text-zinc-800 dark:text-zinc-200 whitespace-nowrap">F{{ $field }}</td>
+                                                @foreach($result['slot_starts'] as $start => $hm)
+                                                    @php $used = $starts[$start] ?? false; @endphp
+                                                    <td class="border-t border-l border-zinc-200 dark:border-zinc-700">
+                                                        <div class="h-4 w-full {{ $used ? 'bg-red-500 dark:bg-red-600' : 'bg-zinc-200 dark:bg-zinc-700' }}"></div>
+                                                    </td>
+                                                @endforeach
+                                                <td class="border-t border-l border-zinc-200 dark:border-zinc-700 text-right px-2 py-1 text-zinc-700 dark:text-zinc-300">{{ $result['field_usage_count'][$field] ?? 0 }}</td>
                                             </tr>
                                         @endforeach
                                         </tbody>

@@ -73,6 +73,7 @@
                                     @else
                                         <form method="POST" action="{{ route('team.games.report', $g) }}" class="flex items-center gap-2">
                                             @csrf
+                                            <label for="score" class="text-xs text-zinc-500">{{ $g->team1 }}-{{ $g->team2 }}</label>
                                             <input type="text" name="score" placeholder="0-0" pattern="\\d+-\\d+" required class="w-20 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2 py-1 text-sm" />
                                             <button type="submit" class="inline-flex items-center rounded-md bg-indigo-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-indigo-700">{{ __('Submit') }}</button>
                                         </form>
@@ -102,7 +103,7 @@
                 @endif
             </div>
 
-            {{--Chat / Posts IMPLEMENTED--}}
+            {{--Chat / Posts --}}
             <div class="rounded-xl border border-neutral-300 dark:border-neutral-700 p-4 bg-white dark:bg-neutral-800">
                 <div class="mb-2 pb-1 border-b border-neutral-200 dark:border-neutral-700 font-medium">{{ __('Team posts') }}</div>
 

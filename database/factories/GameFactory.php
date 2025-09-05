@@ -14,9 +14,8 @@ class GameFactory extends Factory
     public function definition(): array
     {
         return [
-            'outcome' => $this->faker->word(),
-            'startTime' => Carbon::now(),
-            'endTime' => Carbon::now()->addMinutes(10),
+            'start_time' => Carbon::now(),
+            'end_time' => Carbon::now()->addMinutes(10),
             'team_1_id' => $this->faker->randomNumber(),
             'team_2_id' => $this->faker->randomNumber(),
             'field' => $this->faker->randomNumber(),

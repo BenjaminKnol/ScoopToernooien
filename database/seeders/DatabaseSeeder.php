@@ -23,26 +23,59 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => 'Youp Evers',
             'email' => 'youpevers@shcscoop.nl',
-            'password' => bcrypt('EenOrigineelWachtwoordVoorYoup')
+            'password' => bcrypt('EenOrigineelWachtwoordVoorYoup'),
+            'is_admin' => true,
         ]);
 
         User::factory()->create([
             'name' => 'Tygo Hilting',
             'email' => 'tygohilting@shcscoop.nl',
-            'password' => bcrypt('EenOrigineelWachtwoordVoorTygo')
+            'password' => bcrypt('EenOrigineelWachtwoordVoorTygo'),
+            'is_admin' => true,
         ]);
 
         User::factory()->create([
             'name' => 'Ingmar Huizing',
             'email' => 'ingmarhuizing@shcscoop.nl',
-            'password' => bcrypt('EenOrigineelWachtwoordVoorIngmar')
+            'password' => bcrypt('EenOrigineelWachtwoordVoorIngmar'),
+            'is_admin' => true,
         ]);
 
         User::factory()->create([
             'name' => 'Rithik Putatunda',
             'email' => 'rithikputatunda@shcscoop.nl',
-            'password' => bcrypt('EenOrigineelWachtwoordVoorRithik')
+            'password' => bcrypt('EenOrigineelWachtwoordVoorRithik'),
+            'is_admin' => true,
         ]);
+
+        User::factory()->create([
+            'name' => 'Puck de nooy',
+            'email' => 'puckdenooy@shcscoop.nl',
+            'password' => bcrypt('EenOrigineelWachtwoordVoorPuck'),
+            'is_admin' => true,
+        ]);
+
+        User::factory()->create([
+            'name' => 'Klaas Jan Gerritsen',
+            'email' => 'klaasjan@shcscoop.nl',
+            'password' => bcrypt('EenOrigineelWachtwoordVoorKlaas'),
+            'is_admin' => true,
+        ]);
+
+        User::factory()->create([
+            'name' => 'Alexandra Krinkels',
+            'email' => 'alexandrakrinkels@shcscoop.nl',
+            'password' => bcrypt('EenOrigineelWachtwoordVoorAlexandra'),
+            'is_admin' => true,
+        ]);
+
+        User::factory()->create([
+            'name' => 'Lina van Loevezijn',
+            'email' => 'linavanloevezijn@shcscoop.nl',
+            'password' => bcrypt('EenOrigineelWachtwoordVoorLina'),
+            'is_admin' => true,
+        ]);
+
         $this->call([
             TeamSeeder::class,
 //            PlayerSeeder::class,

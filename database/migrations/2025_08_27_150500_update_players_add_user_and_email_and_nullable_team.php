@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::table('players', function (Blueprint $table) {
             if (!Schema::hasColumn('players', 'email')) {
-                $table->string('email')->nullable()->after('secondName');
+                $table->string('email')->nullable()->after('lastName');
             }
             if (!Schema::hasColumn('players', 'user_id')) {
                 $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete()->after('email');

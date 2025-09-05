@@ -11,6 +11,7 @@ use App\Http\Controllers\TeamAssignmentController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Http\Controllers\StandenController;
+use App\Http\Controllers\AdminGameResultController;
 
 Route::get('/', [StandenController::class, 'index'])->name('home');
 
@@ -29,6 +30,9 @@ Route::group(['middleware' => 'auth'], function () {
 
     // Team: report game results
     Route::post('/team/games/{game}/report', [\App\Http\Controllers\TeamGameResultController::class, 'report'])->name('team.games.report');
+
+    // Admin: approve/override outcomes
+    Route::post('/admin/games/{game}/approve', [AdminGameResultController::class, 'approve'])->middleware('admin')->name('admin.games.approve');
 
     // Team admin (CRUD from dashboard)
     Route::post('/teams', [\App\Http\Controllers\TeamController::class, 'store'])->middleware('admin')->name('teams.store');

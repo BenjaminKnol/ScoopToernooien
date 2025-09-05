@@ -22,7 +22,7 @@ class StandenController extends Controller
             ]);
         }
         foreach ($games as $game) {
-            $game->calculatePoints();
+            $game->applyPointsIfNeeded();
         }
     }
 }

@@ -73,7 +73,7 @@
                                     @else
                                         <form method="POST" action="{{ route('team.games.report', $g) }}" class="flex items-center gap-2">
                                             @csrf
-                                            <input type="text" name="score" placeholder="0-0" pattern="\\d+\\s*-\\s*\\d+" required class="w-20 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2 py-1 text-sm" />
+                                            <input type="text" name="score" placeholder="0-0" pattern="\\d+-\\d+" required class="w-20 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2 py-1 text-sm" />
                                             <button type="submit" class="inline-flex items-center rounded-md bg-indigo-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-indigo-700">{{ __('Submit') }}</button>
                                         </form>
                                     @endif

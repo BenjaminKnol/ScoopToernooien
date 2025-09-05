@@ -32,7 +32,8 @@ class Game extends Model
             $team2->increment('points', 1);
         }
 
-        $this->forceFill(['points_applied' => true])->save();
+        $this->points_applied = true;
+        $this->save();
     }
 
     public function revertPointsIfApplied(): void

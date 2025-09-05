@@ -6,6 +6,7 @@ use App\Models\Game;
 use App\Models\Player;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class TeamGameResultController extends Controller
@@ -21,26 +22,44 @@ class TeamGameResultController extends Controller
         abort_if(!in_array($player->team_id, [$game->team_1_id, $game->team_2_id], true), 403);
 
         // Only allow reporting after the game start time (or end time if available)
-        // Keep minimal: allow if start_time <= now()
-        if (now()->lt(optional(\Illuminate\Support\Carbon::parse($game->start_time)))) {
+        if (Carbon::now()->isBefore(Carbon::parse($game->start_time))) {
             return back()->withErrors(['score' => __('You can only report a result after the game has started.')]);
         }
 
+
         $data = $request->validate([
-            'score' => ['required','regex:/^\d+\s*-\s*\d+$/'],
+            'score' => ['required','regex:/^\d+-\d+$/'], // strict: no spaces, only integers around '-'
         ]);
 
-        // Normalize score to "a-b"
-        $normalized = preg_replace('/\s*/', '', $data['score']);
+        $normalized = $data['score']; // already strict
 
-        // Minimal approach: immediately accept and apply points once
-        $game->outcome = $normalized;
-        $game->accepted_outcome = $normalized;
-        $game->status = 'accepted';
+        // Store per-team submission
+        if ($player->team_id === $game->team_1_id) {
+            $game->team_1_submission = $normalized;
+        } else {
+            $game->team_2_submission = $normalized;
+        }
+
+        // Determine status
+        if ($game->team_1_submission && $game->team_2_submission) {
+            if ($game->team_1_submission === $game->team_2_submission) {
+                // Agreement: accept and apply
+                $game->accepted_outcome = $normalized; // both equal
+                $game->status = 'accepted';
+                $game->accepted_at = now();
+                $game->verified_by_admin_id = null; // auto-accept by teams
+                $game->save();
+                $game->applyPointsIfNeeded();
+                return back()->with('success', __('Result accepted.'));
+            } else {
+                $game->status = 'conflict';
+            }
+        } else {
+            $game->status = 'pending';
+        }
+
         $game->save();
-        // Apply points if not yet applied (Game has a guard method)
-        $game->applyPointsIfNeeded();
 
-        return back()->with('success', __('Result reported.'));
+        return back()->with('success', __('Result submitted. Awaiting confirmation.'));
     }
 }

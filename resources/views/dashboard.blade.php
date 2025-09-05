@@ -1,10 +1,59 @@
-@php use Illuminate\Support\Carbon; @endphp
-<x-layouts.app.header>
+@php use Illuminate\Support\Carbon; use Illuminate\Support\Str; @endphp
+<x-layouts.app.header class="pt-4">
     @if (session('success'))
         <x-alert type="success">
             {{ session('success') }}
         </x-alert>
     @endif
+
+    @php $conflictCount = isset($conflicts) ? $conflicts->count() : 0; @endphp
+    @if($conflictCount > 0)
+        <!-- Highly visible admin banner for conflicting outcomes -->
+        <div id="conflicts" class="relative mt-6 mb-4 rounded-xl border-4 border-red-600 bg-gradient-to-r from-red-600 via-amber-500 to-yellow-400 p-5 text-white shadow-2xl">
+            <div class="flex items-start justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-8 w-8 drop-shadow"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0zM12 9a1 1 0 011 1v4a1 1 0 11-2 0v-4a1 1 0 011-1zm0 8a1.25 1.25 0 110-2.5A1.25 1.25 0 0112 17z"/></svg>
+                    <div>
+                        <h1 class="text-2xl font-extrabold tracking-tight">Attention needed</h1>
+                        <p class="text-sm/5 opacity-95">{{ $conflictCount }} conflicting game {{ Str::plural('result', $conflictCount) }} require admin action.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4 grid gap-3">
+                @foreach($conflicts as $cg)
+                    @php
+                        $t1 = optional($cg->team1()->first())->name ?? ('Team #'.$cg->team_1_id);
+                        $t2 = optional($cg->team2()->first())->name ?? ('Team #'.$cg->team_2_id);
+                    @endphp
+                    <div class="rounded-lg bg-white/90 p-3 text-zinc-900 shadow ring-1 ring-white/30">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                            <div class="space-y-1">
+                                <div class="font-semibold">{{ $t1 }} vs {{ $t2 }}</div>
+                                <div class="text-xs text-zinc-700" id="game-submissions-{{ $cg->id }}">
+                                    Team submissions:
+                                    <span class="inline-flex items-center gap-1 rounded bg-red-100 px-2 py-0.5 text-red-700 ring-1 ring-red-200">{{ $cg->team_1_submission ?? '—' }}</span>
+                                    <span class="mx-1">≠</span>
+                                    <span class="inline-flex items-center gap-1 rounded bg-red-100 px-2 py-0.5 text-red-700 ring-1 ring-red-200">{{ $cg->team_2_submission ?? '—' }}</span>
+                                </div>
+                            </div>
+                            <form method="POST" action="{{ route('admin.games.approve', $cg->id) }}" class="flex flex-col md:flex-row md:items-center gap-2 md:gap-3" data-requires-confirm="true">
+                                @csrf
+                                <div class="text-xs text-zinc-700 font-medium">Final score for: <span class="font-semibold">{{ $t1 }}</span> vs <span class="font-semibold">{{ $t2 }}</span></div>
+                                <div class="flex items-center gap-2">
+                                    <label class="text-xs text-zinc-600">Set final score</label>
+                                    <input type="text" name="score" value="{{ $cg->team_1_submission ?? $cg->team_2_submission ?? '' }}" placeholder="e.g. 3-2"
+                                           pattern="^\d+-\d+$" required
+                                           class="rounded-md border-2 border-zinc-300 px-2 py-1 text-sm focus:border-amber-600 focus:ring-amber-600"/>
+                                    <button type="submit" class="rounded-md bg-amber-700 px-3 py-1.5 text-sm font-semibold text-white shadow hover:bg-amber-800 focus:ring-2 focus:ring-amber-400" onclick="return confirmApproveFromBanner(this, {{ $cg->id }});">Approve</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     <div class="flex h-full w-full flex-1 flex-col gap-8 rounded-xl mt-2">
         <div class="relative overflow-hidden rounded-xl mb-4 border border-neutral-200 dark:border-neutral-700 p-6">
             <div class="flex items-center justify-between mb-4">
@@ -70,76 +119,178 @@
                     </button>
                 </div>
             </form>
-            <h3 class="mb-4 text-md font-semibold">Manage Games</h3>
-            <div class="space-y-6">
-                @foreach($games as $game)
-                    <div class="space-y-3 border-b border-gray-200 pb-4 dark:border-gray-700">
-                        <div class="flex items-center justify-between text-sm">
-                            <div>{{ optional($game->team1()->first())->name ?? ('Team #'.$game->team_1_id) }}
-                                vs {{ optional($game->team2()->first())->name ?? ('Team #'.$game->team_2_id) }}</div>
+            <h3 class="mb-2 text-md font-semibold">Manage Games</h3>
+            @php
+                $withOutcomes = $games->filter(function($g){ return !empty($g->accepted_outcome) || !empty($g->team_1_submission) || !empty($g->team_2_submission); });
+                $withoutOutcomes = $games->filter(function($g){ return empty($g->accepted_outcome) && empty($g->team_1_submission) && empty($g->team_2_submission); });
+            @endphp
+            <div class="space-y-2">
+                <h4 class="text-sm font-semibold text-zinc-700">Games with outcomes/submissions</h4>
+                <div class="space-y-6">
+                    @forelse($withOutcomes as $game)
+                        <div class="space-y-3 border-b border-gray-200 pb-4 dark:border-gray-700">
+                            <div class="flex items-center justify-between text-sm">
+                                <div>
+                                    {{ optional($game->team1()->first())->name ?? ('Team #'.$game->team_1_id) }}
+                                    vs {{ optional($game->team2()->first())->name ?? ('Team #'.$game->team_2_id) }}
+                                    @if($game->accepted_outcome)
+                                        <span class="ml-2 inline-flex items-center rounded bg-green-100 px-2 py-0.5 text-green-700 ring-1 ring-green-200" id="status-{{ $game->id }}">Final: {{ $game->accepted_outcome }}</span>
+                                    @elseif($game->status === 'conflict')
+                                        <span class="ml-2 inline-flex items-center rounded bg-amber-100 px-2 py-0.5 text-amber-700 ring-1 ring-amber-200" id="status-{{ $game->id }}">Conflict</span>
+                                    @else
+                                        <span class="ml-2 inline-flex items-center rounded bg-blue-100 px-2 py-0.5 text-blue-700 ring-1 ring-blue-200" id="status-{{ $game->id }}">Pending</span>
+                                    @endif
+                                </div>
+                            </div>
+                            <form method="POST" action="{{ route('games.update', $game->id) }}"
+                                  class="grid grid-cols-1 md:grid-cols-6 gap-3">
+                                @csrf
+                                @method('PUT')
+                                <div>
+                                    <label class="block text-xs text-gray-600">Team 1</label>
+                                    <select name="team_1_id" class="mt-1 block w-full rounded-md border-2 border-gray-200 bg-gray-50 text-gray-600" disabled>
+                                        @foreach($teams as $team)
+                                            <option value="{{ $team->id }}" @selected($team->id === $game->team_1_id)>{{ $team->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-600">Team 2</label>
+                                    <select name="team_2_id" class="mt-1 block w-full rounded-md border-2 border-gray-200 bg-gray-50 text-gray-600" disabled>
+                                        @foreach($teams as $team)
+                                            <option value="{{ $team->id }}" @selected($team->id === $game->team_2_id)>{{ $team->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-600">Start</label>
+                                    <input type="text" name="start_time"
+                                           value="{{ Carbon::hasFormat($game->start_time, 'H:i') ? $game->start_time : (optional(Carbon::parse($game->start_time, null))->format('H:i') ?? (preg_match('/\\d{2}:\\d{2}/', $game->start_time, $m) ? $m[0] : $game->start_time)) }}"
+                                           class="mt-1 block w-full rounded-md border-2 border-gray-200 bg-gray-50 text-gray-600" disabled/>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-600">End</label>
+                                    <input type="text" name="end_time"
+                                           value="{{ Carbon::hasFormat($game->end_time, 'H:i') ? $game->end_time : (optional(Carbon::parse($game->end_time, null))->format('H:i') ?? (preg_match('/\\d{2}:\\d{2}/', $game->end_time, $m) ? $m[0] : $game->end_time)) }}"
+                                           class="mt-1 block w-full rounded-md border-2 border-gray-200 bg-gray-50 text-gray-600" disabled/>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-600">Field</label>
+                                    <input type="number" name="field" value="{{ $game->field + 1 }}"
+                                           class="mt-1 block w-full rounded-md border-2 border-gray-200 bg-gray-50 text-gray-600" disabled/>
+                                </div>
+                                <div class="md:col-span-6 text-right text-xs text-gray-500">Game details are locked because the game has been played.</div>
+                            </form>
+
+                            <!-- Final score editor with confirmation -->
+                            <form method="POST" action="{{ route('admin.games.approve', $game->id) }}" class="flex flex-col md:flex-row md:items-end gap-2 md:gap-3" data-requires-confirm="true" onsubmit="return confirmOutcomeChange(this, {{ $game->id }});">
+                                @csrf
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 w-full">
+                                    <div>
+                                        <label class="block text-xs text-gray-600">Current final</label>
+                                        <input name="current_final" type="text" value="{{ $game->accepted_outcome ?? '—' }}" disabled class="mt-1 block w-full rounded-md border-2 border-gray-200 bg-gray-50 text-gray-600"/>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs text-gray-600">Team 1 submission</label>
+                                        <input name="team_1_submission" type="text" value="{{ $game->team_1_submission ?? '—' }}" disabled class="mt-1 block w-full rounded-md border-2 border-gray-200 bg-gray-50 text-gray-600"/>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs text-gray-600">Team 2 submission</label>
+                                        <input name="team_2_submission" type="text" value="{{ $game->team_2_submission ?? '—' }}" disabled class="mt-1 block w-full rounded-md border-2 border-gray-200 bg-gray-50 text-gray-600"/>
+                                    </div>
+                                </div>
+                                <div class="flex items-end gap-2 w-full md:w-auto">
+                                    <div>
+                                        <label class="block text-xs text-gray-600">Set new final score</label>
+                                        <input type="text" name="score" value="{{ $game->accepted_outcome ?? ($game->team_1_submission ?? $game->team_2_submission ?? '') }}" placeholder="e.g. 3-2" pattern="^\d+-\d+$" required class="mt-1 block w-full rounded-md border-2 border-amber-300 focus:border-amber-600 focus:ring-amber-600 px-2 py-1"/>
+                                    </div>
+                                    <button type="submit" class="mt-6 inline-flex justify-center rounded-md bg-amber-700 px-3 py-2 text-sm font-medium text-white hover:bg-amber-800 focus:ring-2 focus:ring-amber-400">Update final score</button>
+                                </div>
+                            </form>
+
+                            <form id="delete-game-{{ $game->id }}" method="POST"
+                                  action="{{ route('games.destroy', $game->id) }}" class="hidden">
+                                @csrf
+                                @method('DELETE')
+                            </form>
                         </div>
-                        <form method="POST" action="{{ route('games.update', $game->id) }}"
-                              class="grid grid-cols-1 md:grid-cols-6 gap-3">
-                            @csrf
-                            @method('PUT')
-                            <div>
-                                <label class="block text-xs text-gray-600">Team 1</label>
-                                <select name="team_1_id" class="mt-1 block w-full rounded-md border-2 border-gray-300">
-                                    @foreach($teams as $team)
-                                        <option
-                                            value="{{ $team->id }}" @selected($team->id === $game->team_1_id)>{{ $team->name }}</option>
-                                    @endforeach
-                                </select>
+                    @empty
+                        <div class="text-sm text-gray-500">No games with outcomes yet.</div>
+                    @endforelse
+                </div>
+            </div>
+            <div class="mt-6 space-y-2">
+                <h4 class="text-sm font-semibold text-zinc-700">Games without outcomes</h4>
+                <div class="space-y-6">
+                    @forelse($withoutOutcomes as $game)
+                        <div class="space-y-3 border-b border-gray-200 pb-4 dark:border-gray-700">
+                            <div class="flex items-center justify-between text-sm">
+                                <div>{{ optional($game->team1()->first())->name ?? ('Team #'.$game->team_1_id) }}
+                                    vs {{ optional($game->team2()->first())->name ?? ('Team #'.$game->team_2_id) }}</div>
                             </div>
-                            <div>
-                                <label class="block text-xs text-gray-600">Team 2</label>
-                                <select name="team_2_id" class="mt-1 block w-full rounded-md border-2 border-gray-300">
-                                    @foreach($teams as $team)
-                                        <option
-                                            value="{{ $team->id }}" @selected($team->id === $game->team_2_id)>{{ $team->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-600">Start</label>
-                                <input type="text" name="startTime"
-                                       value="{{ Carbon::hasFormat($game->start_time, 'H:i') ? $game->start_time : (optional(Carbon::parse($game->start_time, null))->format('H:i') ?? (preg_match('/\\d{2}:\\d{2}/', $game->start_time, $m) ? $m[0] : $game->start_time)) }}"
-                                       class="mt-1 block w-full rounded-md border-2 border-gray-300"/>
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-600">End</label>
-                                <input type="text" name="endTime"
-                                       value="{{ Carbon::hasFormat($game->end_time, 'H:i') ? $game->end_time : (optional(Carbon::parse($game->end_time, null))->format('H:i') ?? (preg_match('/\\d{2}:\\d{2}/', $game->end_time, $m) ? $m[0] : $game->end_time)) }}"
-                                       class="mt-1 block w-full rounded-md border-2 border-gray-300"/>
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-600">Field</label>
-                                <input type="number" name="field" value="{{ $game->field + 1 }}"
-                                       class="mt-1 block w-full rounded-md border-2 border-gray-300"/>
-                            </div>
-                            <div>
-                                <label class="block text-xs text-gray-600">Outcome</label>
-                                <input type="text" name="outcome" value="{{ $game->outcome }}" placeholder="x-x"
-                                       class="mt-1 block w-full rounded-md border-2 border-gray-300"/>
-                            </div>
-                            <div class="md:col-span-6 flex items-center justify-end gap-2">
-                                <button type="submit"
-                                        class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700">
-                                    Save
-                                </button>
-                                <button type="submit" form="delete-game-{{ $game->id }}"
-                                        class="inline-flex justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700"
-                                        onclick="return confirm('Delete this game?');">Delete
-                                </button>
-                            </div>
-                        </form>
-                        <form id="delete-game-{{ $game->id }}" method="POST"
-                              action="{{ route('games.destroy', $game->id) }}" class="hidden">
-                            @csrf
-                            @method('DELETE')
-                        </form>
-                    </div>
-                @endforeach
+                            <form method="POST" action="{{ route('games.update', $game->id) }}"
+                                  class="grid grid-cols-1 md:grid-cols-6 gap-3">
+                                @csrf
+                                @method('PUT')
+                                <div>
+                                    <label class="block text-xs text-gray-600">Team 1</label>
+                                    <select name="team_1_id" class="mt-1 block w-full rounded-md border-2 border-gray-300">
+                                        @foreach($teams as $team)
+                                            <option value="{{ $team->id }}" @selected($team->id === $game->team_1_id)>{{ $team->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-600">Team 2</label>
+                                    <select name="team_2_id" class="mt-1 block w-full rounded-md border-2 border-gray-300">
+                                        @foreach($teams as $team)
+                                            <option value="{{ $team->id }}" @selected($team->id === $game->team_2_id)>{{ $team->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-600">Start</label>
+                                    <input type="text" name="start_time"
+                                           value="{{ Carbon::hasFormat($game->start_time, 'H:i') ? $game->start_time : (optional(Carbon::parse($game->start_time, null))->format('H:i') ?? (preg_match('/\\d{2}:\\d{2}/', $game->start_time, $m) ? $m[0] : $game->start_time)) }}"
+                                           class="mt-1 block w-full rounded-md border-2 border-gray-300"/>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-600">End</label>
+                                    <input type="text" name="end_time"
+                                           value="{{ Carbon::hasFormat($game->end_time, 'H:i') ? $game->end_time : (optional(Carbon::parse($game->end_time, null))->format('H:i') ?? (preg_match('/\\d{2}:\\d{2}/', $game->end_time, $m) ? $m[0] : $game->end_time)) }}"
+                                           class="mt-1 block w-full rounded-md border-2 border-gray-300"/>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-600">Field</label>
+                                    <input type="number" name="field" value="{{ $game->field + 1 }}"
+                                           class="mt-1 block w-full rounded-md border-2 border-gray-300"/>
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-600">Legacy outcome</label>
+                                    <input type="text" name="outcome" value="{{ $game->outcome }}" placeholder="x-x"
+                                           class="mt-1 block w-full rounded-md border-2 border-gray-300"/>
+                                </div>
+                                <div class="md:col-span-6 flex items-center justify-end gap-2">
+                                    <button type="submit"
+                                            class="inline-flex justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+                                        Save
+                                    </button>
+                                    <button type="submit" form="delete-game-{{ $game->id }}"
+                                            class="inline-flex justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700"
+                                            onclick="return confirm('Delete this game?');">Delete
+                                    </button>
+                                </div>
+                            </form>
+                            <form id="delete-game-{{ $game->id }}" method="POST"
+                                  action="{{ route('games.destroy', $game->id) }}" class="hidden">
+                                @csrf
+                                @method('DELETE')
+                            </form>
+                        </div>
+                    @empty
+                        <div class="text-sm text-gray-500">All games have outcomes or submissions.</div>
+                    @endforelse
+                </div>
             </div>
         </div>
     </div>
@@ -458,6 +609,13 @@
                 form.addEventListener('submit', async (e) => {
                     // Only handle if the user didn’t request download/navigation
                     e.preventDefault();
+                    // Respect confirmation requirement flags
+                    const requires = form.dataset.requiresConfirm === 'true';
+                    const confirmed = form.dataset.confirmed === 'true';
+                    if (requires && !confirmed) {
+                        // Do not submit via AJAX if not confirmed
+                        return;
+                    }
                     const submitter = e.submitter;
                     if (submitter && submitter.hasAttribute('form')) {
                         // Let linked hidden form handle separately
@@ -465,6 +623,8 @@
                     try {
                         const ok = await ajaxSubmit(form);
                         if (ok) {
+                            // Clear a one-time confirmation flag after successfully submitting
+                            if (requires) delete form.dataset.confirmed;
                             // If this is a delete form, remove the wrapper row/card
                             const isDelete = (form.querySelector('input[name="_method"][value="DELETE"]') != null);
                             if (isDelete) {
@@ -479,5 +639,35 @@
                 }, {passive: false});
             });
         })();
+        function confirmOutcomeChange(form, gameId){
+            const row = form.closest('.space-y-3');
+            let current = row.querySelector("input[name='current_final']");
+            let status = document.getElementById(`status-${gameId}`);
+            const teams = row.querySelector('div > div > div')?.textContent?.split('vs') || 'Team 1 vs Team 2';
+            const t1 = teams[0].trim();
+            const t2 = teams[1].split('\n')[0].trim();
+            const team1Sub = row.querySelector("input[name='team_1_submission']")?.value || '—';
+            const team2Sub = row.querySelector("input[name='team_2_submission']")?.value || '—';
+            const newScore = form.querySelector('input[name="score"]').value;
+            const ok = confirm(`You're about to update the final score for: \n\n ${t1} vs ${t2}\n\nCurrent final: ${current.value}\n${t1} submission: ${team1Sub}\n${t2} submission: ${team2Sub}\n\nNew final score: ${newScore}\n\nThis will recalculate points and record your admin account. Proceed?`);
+            if (ok) { form.dataset.confirmed = 'true'; } else { delete form.dataset.confirmed; }
+            current.setAttribute('value', newScore);
+            status.innerHTML = `Final: ${newScore}`;
+            return ok;
+        }
+        function confirmApproveFromBanner(btn, gameId){
+            const form = btn.closest('form');
+            const title = form.previousElementSibling?.textContent?.trim() || 'this game';
+            const teams = title.split(' vs ');
+            const t1 = teams[0].trim();
+            const t2 = teams[1].split('\n')[0];
+            const outcomes = document.getElementById('game-submissions-' + gameId)?.textContent?.split('\n') || [];
+            const t1s = outcomes[2]?.trim();
+            const t2s = outcomes[4]?.trim();
+            const newScore = form.querySelector('input[name="score"]').value;
+            const ok = confirm(`Approve final score for ${t1} vs ${t2}\n\n${t1} submission: ${t1s}\n${t2} submission: ${t2s}\n\nFinal score to set: ${newScore}\n\nThis will accept the result, award points, and record your admin account. Proceed?`);
+            if (ok) { form.dataset.confirmed = 'true'; } else { delete form.dataset.confirmed; }
+            return ok;
+        }
     </script>
 </x-layouts.app.header>

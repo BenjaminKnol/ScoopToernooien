@@ -36,7 +36,7 @@
             {{--            Upcoming games--}}
             <div class="rounded-xl border border-neutral-300 dark:border-neutral-700 p-4 bg-white dark:bg-neutral-800">
                 <div
-                        class="mb-2 pb-1 border-b border-neutral-200 dark:border-neutral-700 font-medium">{{ __('Upcoming games') }}</div>
+                    class="mb-2 pb-1 border-b border-neutral-200 dark:border-neutral-700 font-medium">{{ __('Upcoming games') }}</div>
                 @php $games = $team->upcomingGames(); @endphp
                 @if($games->count() > 0)
                     <ul class="space-y-1.5">
@@ -44,7 +44,7 @@
                             <li class="flex items-center justify-between">
                                 <span class="truncate">{{ Carbon::hasFormat($game->start_time, 'H:i') ? $game->start_time : (optional(Carbon::parse($game->start_time, null))->format('H:i') ?? (preg_match('/\\d{2}:\\d{2}/', $game->start_time, $m) ? $m[0] : $game->start_time)) }} · {{ $game->opponent($team->id)->name }}</span>
                                 <span
-                                        class="text-zinc-500 dark:text-zinc-400">{{ __('Field :n', ['n' => $game->field + 1]) }}</span>
+                                    class="text-zinc-500 dark:text-zinc-400">{{ __('Field :n', ['n' => $game->field + 1]) }}</span>
                             </li>
                         @endforeach
                     </ul>
@@ -56,7 +56,7 @@
             {{-- Report past game result --}}
             <div class="rounded-xl border border-neutral-300 dark:border-neutral-700 p-4 bg-white dark:bg-neutral-800">
                 <div
-                        class="mb-2 pb-1 border-b border-neutral-200 dark:border-neutral-700 font-medium">{{ __('Report result') }}</div>
+                    class="mb-2 pb-1 border-b border-neutral-200 dark:border-neutral-700 font-medium">{{ __('Report result') }}</div>
                 @php
                     $pastGames = Game::where(function($q) use($team){ $q->where('team_1_id',$team->id)->orWhere('team_2_id',$team->id); })
                         ->where('start_time','<=', now())
@@ -77,27 +77,39 @@
                                         </span>
                                         · {{ $g->opponent($team->id)->name }}
                                         <span
-                                                class="text-zinc-500"><br>({{ __('Field :n', ['n' => $g->field + 1]) }})</span>
+                                            class="text-zinc-500"><br>({{ __('Field :n', ['n' => $g->field + 1]) }})</span>
                                     </div>
                                     @if($g->accepted_outcome)
-                                        <div class="text-xs text-green-700 dark:text-green-400">{{ __('Result') }}
+                                        @php
+                                            $outcomes = [$t1Outcome, $t2Outcome] = explode('-', $g->accepted_outcome);
+                                            $winner = max($outcomes);
+                                            if($t2Outcome == $t1Outcome) {
+                                                $colour = "text-gray-500 dark:text-gray-200";
+                                            } elseif ($winner == $t1Outcome && $g->team_1_id == $team->id || $winner == $t2Outcome && $g->team_2_id == $team->id) {
+                                                $colour = "text-green-700 dark:text-green-400";
+                                            } else {
+                                                $colour = "text-red-700 dark:text-red-400";
+                                            }
+                                        @endphp
+                                        <div class="text-xs  {{ $colour }}">{{ __('Result') }}
                                             : {{ $g->accepted_outcome }}</div>
+
                                     @else
                                         <form method="POST" action="{{ route('team.games.report', $g) }}"
                                               class="flex items-center gap-2">
                                             @csrf
                                             <input
-                                                    type="text"
-                                                    @if($team->id == $g->team_1_id && $g->team_1_submission) value="{{ $g->team_1_submission }}"
-                                                    @elseif($team->id == $g->team_2_id && $g->team_2_submission) value="{{ $g->team_2_submission }}"
-                                                    @endif
-                                                    inputmode="numeric"
-                                                    name="score"
-                                                    placeholder="{{ $g->team1->name }}-{{ $g->team2->name }}"
-                                                    title="Use the format x-x (e.g., 3-12), positive integers only"
-                                                    pattern="[1-9]\d*-[1-9]\d*"
-                                                    required
-                                                    class="w-32 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2 py-1 text-sm"
+                                                type="text"
+                                                @if($team->id == $g->team_1_id && $g->team_1_submission) value="{{ $g->team_1_submission }}"
+                                                @elseif($team->id == $g->team_2_id && $g->team_2_submission) value="{{ $g->team_2_submission }}"
+                                                @endif
+                                                inputmode="numeric"
+                                                name="score"
+                                                placeholder="{{ $g->team1->name }}-{{ $g->team2->name }}"
+                                                title="Use the format x-x (e.g., 3-12), positive integers only"
+                                                pattern="[1-9]\d*-[1-9]\d*"
+                                                required
+                                                class="w-32 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2 py-1 text-sm"
                                             />
                                             <button type="submit"
                                                     class="inline-flex items-center rounded-md bg-indigo-600 px-2.5 py-1.5 text-xs font-medium text-white hover:bg-indigo-700">{{ __('Submit') }}</button>
@@ -113,7 +125,7 @@
             {{--Spelers in je team--}}
             <div class="rounded-xl border border-neutral-300 dark:border-neutral-700 p-4 bg-white dark:bg-neutral-800">
                 <div
-                        class="mb-2 pb-1 border-b border-neutral-200 dark:border-neutral-700 font-medium">{{ __('Players in your team') }}</div>
+                    class="mb-2 pb-1 border-b border-neutral-200 dark:border-neutral-700 font-medium">{{ __('Players in your team') }}</div>
                 @php $teamPlayers = $team->players; @endphp
                 @if($teamPlayers->isEmpty())
                     <div class="text-zinc-500 dark:text-zinc-400 text-sm">{{ __('No players in this team.') }}</div>
@@ -132,7 +144,7 @@
             {{--Chat / Posts --}}
             <div class="rounded-xl border border-neutral-300 dark:border-neutral-700 p-4 bg-white dark:bg-neutral-800">
                 <div
-                        class="mb-2 pb-1 border-b border-neutral-200 dark:border-neutral-700 font-medium">{{ __('Team posts') }}</div>
+                    class="mb-2 pb-1 border-b border-neutral-200 dark:border-neutral-700 font-medium">{{ __('Team posts') }}</div>
 
                 {{-- New thread form --}}
                 <form method="POST" action="{{ route('team.posts.store') }}" class="space-y-2 mb-4">
@@ -160,9 +172,9 @@
                                 <div class="p-3 border-b border-neutral-200 dark:border-neutral-700">
                                     <div class="font-medium">{{ $thread->title }}</div>
                                     <div
-                                            class="text-sm text-zinc-700 dark:text-zinc-300 whitespace-pre-line">{{ $thread->body }}</div>
+                                        class="text-sm text-zinc-700 dark:text-zinc-300 whitespace-pre-line">{{ $thread->body }}</div>
                                     <div
-                                            class="mt-1 text-xs text-zinc-500">{{ $thread->author?->firstName }} {{ $thread->author?->lastName }}
+                                        class="mt-1 text-xs text-zinc-500">{{ $thread->author?->firstName }} {{ $thread->author?->lastName }}
                                         · {{ $thread->created_at->diffForHumans() }}</div>
                                 </div>
                                 <div class="p-3 space-y-3">

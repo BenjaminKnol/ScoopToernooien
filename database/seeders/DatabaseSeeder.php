@@ -28,7 +28,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         User::factory()->create([
-            'name' => 'Tygo Hilting',
+            'name' => 'Tygo Hillen',
             'email' => 'tygohilting@shcscoop.nl',
             'password' => bcrypt('EenOrigineelWachtwoordVoorTygo'),
             'is_admin' => true,

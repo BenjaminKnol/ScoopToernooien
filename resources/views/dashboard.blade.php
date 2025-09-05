@@ -38,18 +38,18 @@
                         </select>
                     </div>
                     <div>
-                        <label for="startTime" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Start
+                        <label for="start_time" class="block text-sm font-medium text-gray-700 dark:text-gray-200">Start
                             Time</label>
-                        <input type="text" name="startTime" id="startTime" required
-                               value="{{ old('startTime') }}"
+                        <input type="text" name="start_time" id="start_time" required
+                               value="{{ old('start_time') }}"
                                class="mt-1 block w-full rounded-md border-2 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                placeholder="13:00">
                     </div>
                     <div>
-                        <label for="endTime" class="block text-sm font-medium text-gray-700 dark:text-gray-200">End
+                        <label for="end_time" class="block text-sm font-medium text-gray-700 dark:text-gray-200">End
                             Time</label>
-                        <input type="text" name="endTime" id="endTime" required
-                               value="{{ old('endTime') }}"
+                        <input type="text" name="end_time" id="end_time" required
+                               value="{{ old('end_time') }}"
                                class="mt-1 block w-full rounded-md border-2 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                placeholder="13:15">
                     </div>
@@ -61,14 +61,6 @@
                         <input type="number" name="field" id="field" required min="0"
                                value="{{ old('field') }}"
                                class="mt-1 block w-full rounded-md border-2 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                    </div>
-                    <div>
-                        <label for="outcome"
-                               class="block text-sm font-medium text-gray-700 dark:text-gray-200">Outcome</label>
-                        <input type="text" name="outcome" id="outcome"
-                               value="{{ old('outcome') }}"
-                               class="mt-1 block w-full rounded-md border-2 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                               placeholder="e.g. 2-1 (optional)">
                     </div>
                 </div>
                 <div class="flex justify-end">

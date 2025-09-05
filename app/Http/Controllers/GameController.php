@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Game;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class GameController extends Controller
 {
@@ -24,7 +24,10 @@ class GameController extends Controller
             'field' => ['required', 'integer'],
         ]);
 
-        $game = Game::create($data);
+        $data['start_time'] = (string)Carbon::today()->setTimeFromTimeString($request->start_time);
+        $data['end_time'] = (string)Carbon::today()->setTimeFromTimeString($request->end_time);
+
+        Game::create($data);
 
         return redirect('dashboard')->with('success', 'Match added successfully.');
     }
@@ -47,7 +50,7 @@ class GameController extends Controller
 
         $game->update($data);
 
-        // Recalculate points only when outcome is provided (or changed)
+        // Recalculate points only when an outcome is provided (or changed)
         if ($request->filled('outcome')) {
             StandenController::calculatePoints();
         }

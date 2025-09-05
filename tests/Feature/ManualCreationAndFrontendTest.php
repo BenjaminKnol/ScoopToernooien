@@ -66,7 +66,7 @@ class ManualCreationAndFrontendTest extends TestCase
             ->get(route('my-team'))
             ->assertOk()
             ->assertSee('Report result')
-            ->assertSeeHtml('pattern="\\\d+-\\\d+"');
+            ->assertSeeHtml('[1-9]\d*-[1-9]\d*');
     }
 
     public function test_admin_dashboard_shows_manual_creation_forms(): void

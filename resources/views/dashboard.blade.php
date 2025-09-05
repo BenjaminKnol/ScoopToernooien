@@ -61,6 +61,8 @@
                 <div class="space-x-3">
                     <a href="{{ route('dashboard.generateSchedule') }}"
                        class="text-sm text-indigo-600 hover:text-indigo-800">{{ __('Generate schedule') }}</a>
+                    <a href="{{ route('dashboard.schedule') }}"
+                       class="text-sm text-indigo-600 hover:text-indigo-800">{{ __('View schedule') }}</a>
                 </div>
             </div>
             <form method="POST" action="{{ route('games.store') }}" class="space-y-4 mb-6">

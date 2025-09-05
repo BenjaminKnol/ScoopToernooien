@@ -10,6 +10,138 @@ use Illuminate\Support\Facades\DB;
 
 class ScheduleController extends Controller
 {
+    public function overview()
+    {
+        // Load all games with teams and build a result structure similar to generator output
+        $games = Game::query()->with(['team1:id,name', 'team2:id,name'])->orderBy('field')->orderBy('start_time')->get();
+
+        // Prepare collections
+        $fields = $games->pluck('field')->filter(fn($f) => $f !== null)->unique()->values()->all();
+        $fieldCount = empty($fields) ? 0 : (max($fields) + 1);
+
+        $slotStarts = $games->pluck('start_time')->filter()->map(function($s){
+            try { return (string)\Carbon\Carbon::parse($s)->toDateTimeString(); } catch (\Throwable $e) { return (string)$s; }
+        })->unique()->sort()->values();
+        $slotStartsMap = [];
+        foreach ($slotStarts as $s) {
+            try { $slotStartsMap[$s] = \Carbon\Carbon::parse($s)->format('H:i'); } catch (\Throwable $e) { $slotStartsMap[$s] = $s; }
+        }
+
+        // Build schedule per field with 1-based field numbers for display
+        $schedule = [];
+        for ($f = 1; $f <= max(1, $fieldCount); $f++) { $schedule[$f] = []; }
+        foreach ($games as $g) {
+            $f = ($g->field ?? 0) + 1; // DB keeps 0-based elsewhere
+            try {
+                $start = \Carbon\Carbon::parse($g->start_time);
+                $end = \Carbon\Carbon::parse($g->end_time);
+                $startHm = $start->format('H:i');
+                $endHm = $end->format('H:i');
+                $startStr = $start->toDateTimeString();
+                $endStr = $end->toDateTimeString();
+            } catch (\Throwable $e) {
+                $startHm = (string)$g->start_time; $endHm = (string)$g->end_time; $startStr = (string)$g->start_time; $endStr = (string)$g->end_time;
+            }
+            $schedule[$f][] = [
+                'field' => $f,
+                'start' => $startStr,
+                'end' => $endStr,
+                'start_hm' => $startHm,
+                'end_hm' => $endHm,
+                'team_1_id' => $g->team_1_id,
+                'team_2_id' => $g->team_2_id,
+                'team_1_name' => optional($g->team1)->name ?? ('Team #'.$g->team_1_id),
+                'team_2_name' => optional($g->team2)->name ?? ('Team #'.$g->team_2_id),
+                'violations' => [],
+            ];
+        }
+        // Sort slots per field by start time
+        foreach ($schedule as $f => &$slots) {
+            usort($slots, fn($a,$b) => strcmp($a['start'], $b['start']));
+        }
+        unset($slots);
+
+        // Build team list
+        $teamIds = $games->pluck('team_1_id')->merge($games->pluck('team_2_id'))->filter()->unique()->values()->all();
+        $teams = \App\Models\Team::query()->whereIn('id', $teamIds)->pluck('name','id')->toArray();
+        $teamsStruct = [];
+        foreach ($teamIds as $tid) { $teamsStruct[$tid] = ['name' => $teams[$tid] ?? ('Team #'.$tid), 'count' => 0]; }
+
+        // Team and field matrices
+        $teamMatrix = [];
+        $teamCellFlags = [];
+        $lastOpponentByTeamAtIndex = [];
+        $fieldMatrix = [];
+        $fieldUsageCount = [];
+        foreach (array_keys($schedule) as $f) { $fieldMatrix[$f] = []; $fieldUsageCount[$f] = 0; }
+
+        foreach ($schedule as $f => $slots) {
+            foreach ($slots as $slot) {
+                $start = $slot['start'];
+                $fieldMatrix[$f][$start] = true; $fieldUsageCount[$f]++;
+                foreach (['team_1_id','team_2_id'] as $k) {
+                    $tid = $slot[$k] ?? null; if (!$tid) continue;
+                    $teamMatrix[$tid] = $teamMatrix[$tid] ?? [];
+                    $teamCellFlags[$tid] = $teamCellFlags[$tid] ?? [];
+                    $teamMatrix[$tid][$start] = true;
+                    $teamsStruct[$tid]['count'] = ($teamsStruct[$tid]['count'] ?? 0) + 1;
+                }
+            }
+        }
+
+        // Summary and window
+        $windowStart = null; $windowEnd = null; $matchLen = null;
+        if ($games->count() > 0) {
+            try {
+                $windowStart = \Carbon\Carbon::parse($games->min('start_time'))->toDateTimeString();
+                $windowEnd = \Carbon\Carbon::parse($games->max('end_time'))->toDateTimeString();
+            } catch (\Throwable $e) {
+                $windowStart = (string) $games->min('start_time');
+                $windowEnd = (string) $games->max('end_time');
+            }
+            // Derive match length from first record
+            $g0 = $games->first();
+            try { $matchLen = \Carbon\Carbon::parse($g0->start_time)->diffInMinutes(\Carbon\Carbon::parse($g0->end_time)); } catch (\Throwable $e) { $matchLen = null; }
+        }
+
+        $slotsPerField = [];
+        foreach ($schedule as $f => $slots) { $slotsPerField[$f] = count($slots); }
+        $totalSlots = array_sum($slotsPerField);
+
+        $result = [
+            'summary' => [
+                'number_of_fields' => $fieldCount ?: 1,
+                'available_hours' => $windowStart && $windowEnd ? round((\Carbon\Carbon::parse($windowStart)->floatDiffInMinutes(\Carbon\Carbon::parse($windowEnd))) / 60, 2) : '-',
+                'match_length_minutes' => $matchLen ?? '-',
+                'buffer_minutes' => '-',
+                'slots_per_field' => $slotsPerField,
+                'total_slots' => $totalSlots,
+                'constraints' => [
+                    'max_consecutive_matches' => '-',
+                    'max_idle_breaks' => '-',
+                ],
+                'regeneration' => [
+                    'attempts_used' => '-',
+                    'max_idle_in_any_slot' => '-',
+                ],
+                'violations' => [],
+                'window' => [
+                    'start' => $windowStart ?? '-',
+                    'end' => $windowEnd ?? '-',
+                ],
+            ],
+            'schedule' => $schedule,
+            'slot_starts' => $slotStartsMap,
+            'teams' => $teamsStruct,
+            'team_matrix' => $teamMatrix,
+            'team_cell_flags' => $teamCellFlags,
+            'field_matrix' => $fieldMatrix,
+            'field_usage_count' => $fieldUsageCount,
+        ];
+
+        return view('dashboard.schedule', [ 'result' => $result ]);
+    }
+
     public function create()
     {
         $fieldsDefault = (int) config('scheduling.number_of_fields', 1);

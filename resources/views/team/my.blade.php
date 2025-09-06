@@ -103,7 +103,7 @@
                                                 @if($team->id == $g->team_1_id && $g->team_1_submission) value="{{ $g->team_1_submission }}"
                                                 @elseif($team->id == $g->team_2_id && $g->team_2_submission) value="{{ $g->team_2_submission }}"
                                                 @endif
-                                                inputmode="numeric"
+{{--                                                inputmode="numeric"--}}
                                                 name="score"
                                                 placeholder="{{ $g->team1->name }}-{{ $g->team2->name }}"
                                                 title="Use the format x-x (e.g., 3-12), positive integers only"

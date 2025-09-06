@@ -68,7 +68,7 @@
                 <!-- Image: visible on mobile (sm:hidden), hidden on >=sm -->
                 <span class="truncate">{{ __('Upcoming events') }}</span>
                 <img
-                    class="block w-full max-w-xs rounded-lg sm:hidden"
+                    class="block w-full max-w-xs rounded-lg"
                     src="{{ Vite::asset('resources/images/upcoming_events/scoopweekend.jpeg') }}"
                     alt="Upcoming event promo image" />
                 <!-- Small text to advertise upcoming event -->

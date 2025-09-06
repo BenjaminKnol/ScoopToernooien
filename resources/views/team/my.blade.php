@@ -107,7 +107,7 @@
                                                 name="score"
                                                 placeholder="{{ $g->team1->name }}-{{ $g->team2->name }}"
                                                 title="Use the format x-x (e.g., 3-12), positive integers only"
-                                                pattern="[1-9]\d*-[1-9]\d*"
+                                                pattern="[0-9]\d*-[0-9]\d*"
                                                 required
                                                 class="w-32 rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2 py-1 text-sm"
                                             />

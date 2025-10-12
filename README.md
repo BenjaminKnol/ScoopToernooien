@@ -1,6 +1,8 @@
-# SHC Scoop – Field Hockey Tournament Manager
+# Field Hockey Tournament Manager
 
 A Laravel-based application to organize and manage field hockey tournaments for the SHC Scoop student association. Local development uses Laravel Sail (Docker). Deployment will likely be on Microsoft Azure; details are being worked out.
+
+This project is currently public for **community feedback and feature requests**, but **commercial use or redistribution is not allowed** without explicit permission from the project owner.
 
 ## Tech stack
 - PHP 8.x, Laravel 10/11
@@ -16,18 +18,18 @@ A Laravel-based application to organize and manage field hockey tournaments for 
 
 ## Getting started (Laravel Sail)
 1. Copy environment file and set your values:
-   - cp .env.example .env
-   - Update DB_*, APP_URL, MAIL_*, etc.
+    - `cp .env.example .env`
+    - Update DB_*, APP_URL, MAIL_*, etc.
 2. Install dependencies:
-   - composer install
+    - `composer install`
 3. Start the Sail containers:
-   - ./vendor/bin/sail up -d
+    - `./vendor/bin/sail up -d`
 4. Generate app key:
-   - ./vendor/bin/sail artisan key:generate
+    - `./vendor/bin/sail artisan key:generate`
 5. Run migrations and seeders (if available):
-   - ./vendor/bin/sail artisan migrate --seed
+    - `./vendor/bin/sail artisan migrate --seed`
 6. Visit the app:
-   - http://localhost (or the port you set in .env)
+    - http://localhost (or the port you set in .env)
 
 ## Common Sail commands
 - Start containers: `./vendor/bin/sail up -d`
@@ -62,6 +64,7 @@ Proposed next steps:
 - Use feature branches and pull requests
 - Follow Laravel/PHP-CS-Fixer coding standards (add a fixer config if not present)
 - Add/maintain tests for new features
+- By contributing, you agree to assign all rights of your contributions to the project owner, allowing future commercialization.
 
 ## License
-Specify license (e.g., MIT) once confirmed by the project owner.
+This project is licensed under a **source-available, non-commercial license**. See [LICENSE.md](LICENSE.md) for details.

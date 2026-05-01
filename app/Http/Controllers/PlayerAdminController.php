@@ -7,6 +7,7 @@ use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
 class PlayerAdminController extends Controller
@@ -94,8 +95,11 @@ class PlayerAdminController extends Controller
                     $user = User::create([
                         'name' => $username,
                         'email' => $email,
-                        'password' => $email, // As requested (insecure, event-only)
+                        'password' => bcrypt(Str::random(32)),
                         'is_admin' => false,
+                    ]);
+                    Password::sendResetLink([
+                        'email' => $email
                     ]);
                     $created++;
                 } else {

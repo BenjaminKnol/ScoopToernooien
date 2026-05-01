@@ -13,7 +13,7 @@ use Livewire\Volt\Component;
 
 new #[Layout('components.layouts.auth')] class extends Component {
     #[Validate('required|string')]
-    public string $username = '';
+    public string $email = '';
 
     #[Validate('required|string')]
     public string $password = '';
@@ -29,11 +29,11 @@ new #[Layout('components.layouts.auth')] class extends Component {
 
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt(['name' => $this->username, 'password' => $this->password], $this->remember)) {
+        if (! Auth::attempt(['email' => $this->email, 'password' => $this->password], $this->remember)) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'username' => __('auth.failed'),
+                'email' => __('auth.failed'),
             ]);
         }
 
@@ -69,12 +69,12 @@ new #[Layout('components.layouts.auth')] class extends Component {
      */
     protected function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->username).'|'.request()->ip());
+        return Str::transliterate(Str::lower($this->email).'|'.request()->ip());
     }
 }; ?>
 
 <div class="flex flex-col gap-6">
-    <x-auth-header :title="__('Log in to your account')" :description="__('Enter your username and password below to log in')" />
+    <x-auth-header :title="__('Log in to your account')" :description="__('Enter your email and password below to log in')" />
 
     <!-- Session Status -->
     <x-auth-session-status class="text-center" :status="session('status')" />
@@ -82,13 +82,13 @@ new #[Layout('components.layouts.auth')] class extends Component {
     <form wire:submit="login" class="flex flex-col gap-6">
         <!-- Username -->
         <flux:input
-            wire:model="username"
-            :label="__('Username')"
-            type="username"
+            wire:model="email"
+            :label="__('Email')"
+            type="email"
             required
             autofocus
-            autocomplete="userName"
-            placeholder="JohnDoe"
+            autocomplete="email"
+            placeholder="JohnD@example.com"
         />
 
         <!-- Password -->

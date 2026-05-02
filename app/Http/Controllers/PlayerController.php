@@ -6,6 +6,7 @@ use App\Models\Player;
 use App\Models\User;
 use Dflydev\DotAccessData\Data;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
 class PlayerController extends Controller
@@ -32,8 +33,11 @@ class PlayerController extends Controller
             $user = User::create([
                 'name' => $username,
                 'email' => $data['email'],
-                'password' => $data['email'], // As requested (insecure, event-only)
+                'password' => Str::random(32),
                 'is_admin' => false,
+            ]);
+            Password::sendResetLink([
+                'email' => $data['email']
             ]);
         }
         $data['user_id'] = $user->id;

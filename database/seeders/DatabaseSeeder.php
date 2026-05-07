@@ -56,10 +56,15 @@ class DatabaseSeeder extends Seeder
             'is_admin' => true,
         ]);
 
+        User::factory()->create([
+            'name' => 'Koen Burghout',
+            'email' => 'koenburghout@shcscoop.nl',
+            'password' => bcrypt(Str::random(32)),
+            'is_admin' => true,
+        ]);
+
         $this->call([
             TeamSeeder::class,
-//            PlayerSeeder::class,
-//            GameSeeder::class,
         ]);
     }
 }

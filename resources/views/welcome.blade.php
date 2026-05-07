@@ -64,13 +64,14 @@
     <!-- Bottom promo section: centered. Mobile shows an image. Replace src/alt/text as needed. -->
     <div class="mt-6 w-full">
         <div class="mx-auto max-w-3xl">
-            <div class="flex flex-col items-center justify-center gap-3 rounded-xl border border-zinc-200 bg-white p-4 text-center shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+            <div
+                class="flex flex-col items-center justify-center gap-3 rounded-xl border border-zinc-200 bg-white p-4 text-center shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
                 <!-- Image: visible on mobile (sm:hidden), hidden on >=sm -->
                 <span class="truncate">{{ __('Upcoming events') }}</span>
                 <img
                     class="block w-full max-w-xs rounded-lg"
-                    src="{{ Vite::asset('resources/images/upcoming_events/scoopweekend.jpeg') }}"
-                    alt="Upcoming event promo image" />
+                    src="{{ Vite::asset('resources/images/upcoming_events/PubquizBorrel.jpeg') }}"
+                    alt="Upcoming event promo image"/>
                 <!-- Small text to advertise upcoming event -->
                 <div class="space-y-1">
                     <div class="text-base font-semibold text-zinc-900 dark:text-zinc-100">
@@ -79,18 +80,23 @@
                     </div>
                     <p class="text-sm text-zinc-600 dark:text-zinc-300">
                         <!-- Edit this description -->
-                        <h1>💚Lieve scoopers💚</h1>
+                    <h1>Lieve scoopers</h1>
 
-                        <p>Afgelopen zaterdag hebben we het seizoen goed samen afgesloten tijdens het eindfeest🎉. Maarr niet getreurd…. Want het nieuwe seizoen komt er alweer snel aan en we starten traditiegetrouw met het Scoopweekend!!! 🏕️</p>
+                    <p>Wie o wie wordt de winnaar van de avond? 🕵️‍♂️✨ Op 13 mei gaan we los bij de Kurk met de enige
+                        echte Wie is het? Pubquiz borrel Verwacht een Pubquiz met veel verschillende rondes die je
+                        koppie weer even laten kraken🧠Voor het winnende team ligt er natuurlijk een geweldige prijs
+                        klaar! 🏆</p>
 
-                        <p>De Tripcie is alweer druk bezig geweest met de voorbereidingen. Of je nou net nieuw bent bij scoop of er al jaren bij zit iedereen is welkom om samen het nieuwe seizoen af te trappen en elkaar beter te leren kennen. 🤗</p>
+                    <p>Maar er is meer... Het A-team en de PromoCo onthullen deze avond namelijk zowel het thema van het
+                        Eindfeest als het thema van de OWee! 🎊🎈 Dubbel feest en dubbel zoveel reden om erbij te zijn.
+                        Vergeet ook niet direct 27 juni in je agenda te blokken, want dan knallen we het jaar uit
+                        tijdens het Eindfeest. 🗓️</p>
 
-                        <p>Het thema houden we nog even geheim, maar zodra het seizoen weer begint, hoor je snel meer👀. Het word een weekend om nooit meer te vergeten, of toch liever wel😉.</p>
+                    <p>We zien jullie om 21:00 uur @Kurk. Zet je speurneus op en zorg dat je deze onthullingen niet
+                        mist! 🔍</p>
 
-                        <p>Dus zet het in je agenda: 17-19 oktober. En dan zien we jullie dan!! 🥳</p>
-
-                        <p>Liefsss,
-                        Tripcie❤️</p>
+                    <p>Liefs,
+                        Het A-team💚</p>
                     </p>
                 </div>
             </div>

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
 use App\Http\Controllers\StandenController;
 use App\Http\Controllers\AdminGameResultController;
+use App\Http\Controllers\TournamentSettingController;
 
 Route::get('/', [StandenController::class, 'index'])->name('home');
 
@@ -35,15 +36,21 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/admin/games/{game}/approve', [AdminGameResultController::class, 'approve'])->middleware('admin')->name('admin.games.approve');
 
     // Team admin (CRUD from dashboard)
+    Route::get('/teams', [\App\Http\Controllers\TeamController::class, 'index'])->middleware('admin')->name('teams.index');
     Route::post('/teams', [\App\Http\Controllers\TeamController::class, 'store'])->middleware('admin')->name('teams.store');
     Route::put('/teams/{team}', [\App\Http\Controllers\TeamController::class, 'update'])->middleware('admin')->name('teams.update');
     Route::delete('/teams/{team}', [\App\Http\Controllers\TeamController::class, 'destroy'])->middleware('admin')->name('teams.destroy');
 
     // Players admin (CSV import)
+    Route::get('/players', [PlayerController::class, 'index'])->middleware('admin')->name('players.index');
     Route::post('/players/import', [PlayerAdminController::class, 'import'])->middleware('admin')->name('players.import');
     Route::put('/players/{player}', [PlayerAdminController::class, 'update'])->middleware('admin')->name('players.update');
     Route::post('/players', [PlayerController::class, 'store'])->middleware('admin')->name('players.store');
     Route::delete('/players/{player}', [PlayerController::class, 'destroy'])->middleware('admin')->name('players.destroy');
+
+    // Tournament settings (admin)
+    Route::get('/tournament-settings', [TournamentSettingController::class, 'edit'])->middleware('admin')->name('tournament-settings.edit');
+    Route::put('/tournament-settings', [TournamentSettingController::class, 'update'])->middleware('admin')->name('tournament-settings.update');
 });
 
 // Dashboard for admins

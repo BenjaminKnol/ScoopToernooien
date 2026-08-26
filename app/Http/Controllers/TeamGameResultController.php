@@ -28,10 +28,15 @@ class TeamGameResultController extends Controller
 
 
         $data = $request->validate([
-            'score' => ['required','regex:/^\d+-\d+$/'], // strict: no spaces, only integers around '-'
+            'team_1_score' => ['required', 'integer', 'min:0'],
+            'team_2_score' => ['required', 'integer', 'min:0'],
         ]);
 
-        $normalized = $data['score']; // already strict
+        // Always composed in team_1-team_2 order regardless of which team is
+        // submitting, since the form labels both fields with the real team
+        // names instead of "us"/"them" — this is what makes the two teams'
+        // submissions comparable as plain strings below.
+        $normalized = "{$data['team_1_score']}-{$data['team_2_score']}";
 
         // Store per-team submission
         if ($player->team_id === $game->team_1_id) {

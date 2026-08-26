@@ -136,7 +136,7 @@ class PlayerAdminController extends Controller
             return back()->withErrors(['csv' => $e->getMessage()]);
         }
 
-        return redirect()->route('dashboard')->with('success', __("Imported players. Users created: :c, existing updated: :u, rows skipped: :s", ['c' => $created, 'u' => $updated, 's' => $skipped]));
+        return redirect()->route('players.index')->with('success', __("Imported players. Users created: :c, existing updated: :u, rows skipped: :s", ['c' => $created, 'u' => $updated, 's' => $skipped]));
     }
 
     /** Assign/Update player's team */
@@ -152,6 +152,6 @@ class PlayerAdminController extends Controller
 
         // Optionally update Team.number_of_players counts elsewhere later
 
-        return redirect()->route('dashboard')->with('success', __('Player updated successfully.'));
+        return redirect()->route('players.index')->with('success', __('Player updated successfully.'));
     }
 }

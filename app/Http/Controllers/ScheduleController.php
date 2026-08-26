@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Team;
 use App\Models\Game;
+use App\Models\TournamentSetting;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -144,8 +145,9 @@ class ScheduleController extends Controller
 
     public function create()
     {
-        $fieldsDefault = (int) config('scheduling.number_of_fields', 1);
-        $hoursDefault = (float) config('scheduling.available_hours', 4);
+        $settings = TournamentSetting::current();
+        $fieldsDefault = (int) $settings->number_of_fields;
+        $hoursDefault = (float) $settings->available_hours;
         $defaults = [
             'match_length_minutes' => 20,
             'max_consecutive_matches' => 2,
@@ -172,10 +174,11 @@ class ScheduleController extends Controller
             'available_hours' => ['nullable','numeric','min:0.5','max:24'],
         ]);
 
-        $fields = (int) ($data['number_of_fields'] ?? config('scheduling.number_of_fields', 1));
-        $hours  = (float) ($data['available_hours'] ?? config('scheduling.available_hours', 4));
-        $day    = (string) config('scheduling.tournament_day');
-        $start  = (string) config('scheduling.start_time');
+        $settings = TournamentSetting::current();
+        $fields = (int) ($data['number_of_fields'] ?? $settings->number_of_fields);
+        $hours  = (float) ($data['available_hours'] ?? $settings->available_hours);
+        $day    = (string) optional($settings->tournament_day)->format('Y-m-d');
+        $start  = (string) $settings->start_time;
 
         $match = (int) $data['match_length_minutes'];
         $buffer = 5; // fixed buffer between matches

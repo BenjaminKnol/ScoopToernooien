@@ -24,6 +24,16 @@ class TeamController extends Controller
     }
 
     /**
+     * List all teams for the admin teams page.
+     */
+    public function index()
+    {
+        return view('teams.index', [
+            'teams' => Team::all(),
+        ]);
+    }
+
+    /**
      * Store a newly created team (admin only via middleware)
      */
     public function store(Request $request)
@@ -34,9 +44,13 @@ class TeamController extends Controller
             'costume_rating' => ['nullable', 'integer', 'min:0'],
         ]);
 
+        // `points` is NOT NULL with a DB default of 0, but an explicit null in the
+        // insert (from a blank form field) overrides that default rather than using it.
+        $data['points'] ??= 0;
+
         Team::create($data);
 
-        return redirect()->route('dashboard')->with('success', __('Team created successfully.'));
+        return redirect()->route('teams.index')->with('success', __('Team created successfully.'));
     }
 
     /**
@@ -50,9 +64,11 @@ class TeamController extends Controller
             'costume_rating' => ['nullable', 'integer', 'min:0'],
         ]);
 
+        $data['points'] ??= 0;
+
         $team->update($data);
 
-        return redirect()->route('dashboard')->with('success', __('Team updated successfully.'));
+        return redirect()->route('teams.index')->with('success', __('Team updated successfully.'));
     }
 
     /**
@@ -61,6 +77,6 @@ class TeamController extends Controller
     public function destroy(Team $team)
     {
         $team->delete();
-        return redirect()->route('dashboard')->with('success', __('Team deleted successfully.'));
+        return redirect()->route('teams.index')->with('success', __('Team deleted successfully.'));
     }
 }

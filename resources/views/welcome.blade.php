@@ -2,40 +2,37 @@
     use Illuminate\Support\Carbon;
 @endphp
 <x-layouts.app.header>
-    <div class="flex h-full w-full flex-1 flex-col gap-6 rounded-xl p-4">
+    <div class="flex w-full flex-col gap-6 p-4">
         <div class="grid auto-rows-min gap-2 grid-cols-1">
             <div class="flex items-end justify-between">
                 <div>
-                    <h1 class="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">{{ __('Leaderboard') }}</h1>
-                    <p class="text-sm text-zinc-600 dark:text-zinc-300">{{ __('All teams in one group. Sorted by points.') }}</p>
+                    <flux:heading size="xl" class="font-display">{{ __('Leaderboard') }}</flux:heading>
+                    <flux:subheading>{{ __('All teams in one group. Sorted by points.') }}</flux:subheading>
                 </div>
             </div>
         </div>
 
         <div class="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             @foreach ($teams as $index => $team)
-                <div
-                    class="group relative overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-sm transition hover:shadow-md dark:border-zinc-700 dark:bg-zinc-900">
-                    <div
-                        class="absolute right-3 top-3 inline-flex items-center rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+                <x-ui.card
+                    class="group relative border-t-4 transition hover:shadow-md {{ $index === 0 ? 'ring-1 ring-(--color-brand-green)/40' : '' }}"
+                    style="border-top-color: {{ $team->color_hex ?? 'var(--color-zinc-300)' }}">
+                    <flux:badge class="absolute right-3 top-3" :color="$index === 0 ? 'amber' : 'zinc'" size="sm" variant="pill">
                         #{{ $index + 1 }}
-                    </div>
-                    <div class="flex h-full flex-col gap-3 p-4">
-                        <div class="flex items-center justify-between">
-                            <div
-                                class="truncate font-semibold text-zinc-900 dark:text-zinc-50 inline-flex items-center gap-2">
+                    </flux:badge>
+
+                    <div class="flex h-full flex-col gap-3">
+                        <div class="flex items-center justify-between pr-14">
+                            <div class="truncate font-semibold text-zinc-900 dark:text-zinc-50 inline-flex items-center gap-2">
                                 <span class="truncate">{{ $team->name }}</span>
                                 @if(!empty($team->color_hex))
                                     <span
-                                        class="inline-block h-3 w-3 rounded-full border border-zinc-300 dark:border-zinc-600"
+                                        class="inline-block h-3 w-3 shrink-0 rounded-full border border-zinc-300 dark:border-zinc-600"
                                         title="{{ $team->color_name ?? '' }}"
                                         style="background-color: {{ $team->color_hex }}"></span>
                                 @endif
                             </div>
-                            <div
-                                class="mr-16 inline-flex items-center rounded-lg bg-zinc-100 px-2 py-1 text-sm font-medium text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200">
-                                {{ $team->points ?? 0 }} {{ __('pts') }}
-                            </div>
+                            <flux:badge color="zinc">{{ $team->points ?? 0 }} {{ __('pts') }}</flux:badge>
                         </div>
 
                         <div
@@ -53,53 +50,46 @@
                                     @endforeach
                                 </ul>
                             @else
-                                <div class="text-zinc-500 dark:text-zinc-400">{{ __('No upcoming games') }}</div>
+                                <x-ui.empty-state :message="__('No upcoming games')" />
                             @endif
                         </div>
                     </div>
-                </div>
+                </x-ui.card>
             @endforeach
         </div>
     </div>
-    <!-- Bottom promo section: centered. Mobile shows an image. Replace src/alt/text as needed. -->
+
+    <!-- Bottom promo section: centered. Replace src/alt/text as needed. -->
     <div class="mt-6 w-full">
         <div class="mx-auto max-w-3xl">
-            <div
-                class="flex flex-col items-center justify-center gap-3 rounded-xl border border-zinc-200 bg-white p-4 text-center shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
-                <!-- Image: visible on mobile (sm:hidden), hidden on >=sm -->
-                <span class="truncate">{{ __('Upcoming events') }}</span>
+            <x-ui.card class="flex flex-col items-center gap-3 text-center">
+                <span class="truncate text-sm font-medium text-zinc-500 dark:text-zinc-400">{{ __('Upcoming events') }}</span>
                 <img
                     class="block w-full max-w-xs rounded-lg"
                     src="{{ Vite::asset('resources/images/upcoming_events/PubquizBorrel.jpeg') }}"
                     alt="Upcoming event promo image"/>
-                <!-- Small text to advertise upcoming event -->
-                <div class="space-y-1">
-                    <div class="text-base font-semibold text-zinc-900 dark:text-zinc-100">
-                        <!-- Edit this headline -->
-                        Upcoming Event
+                <div class="space-y-2 text-start sm:text-center">
+                    <flux:heading size="lg">Upcoming Event</flux:heading>
+                    <div class="space-y-3 text-sm text-zinc-600 dark:text-zinc-300">
+                        <p class="font-semibold text-zinc-900 dark:text-zinc-100">Lieve scoopers</p>
+
+                        <p>Wie o wie wordt de winnaar van de avond? 🕵️‍♂️✨ Op 13 mei gaan we los bij de Kurk met de enige
+                            echte Wie is het? Pubquiz borrel Verwacht een Pubquiz met veel verschillende rondes die je
+                            koppie weer even laten kraken🧠Voor het winnende team ligt er natuurlijk een geweldige
+                            prijs klaar! 🏆</p>
+
+                        <p>Maar er is meer... Het A-team en de PromoCo onthullen deze avond namelijk zowel het thema
+                            van het Eindfeest als het thema van de OWee! 🎊🎈 Dubbel feest en dubbel zoveel reden om
+                            erbij te zijn. Vergeet ook niet direct 27 juni in je agenda te blokken, want dan knallen
+                            we het jaar uit tijdens het Eindfeest. 🗓️</p>
+
+                        <p>We zien jullie om 21:00 uur @Kurk. Zet je speurneus op en zorg dat je deze onthullingen
+                            niet mist! 🔍</p>
+
+                        <p>Liefs,<br>Het A-team💚</p>
                     </div>
-                    <p class="text-sm text-zinc-600 dark:text-zinc-300">
-                        <!-- Edit this description -->
-                    <h1>Lieve scoopers</h1>
-
-                    <p>Wie o wie wordt de winnaar van de avond? 🕵️‍♂️✨ Op 13 mei gaan we los bij de Kurk met de enige
-                        echte Wie is het? Pubquiz borrel Verwacht een Pubquiz met veel verschillende rondes die je
-                        koppie weer even laten kraken🧠Voor het winnende team ligt er natuurlijk een geweldige prijs
-                        klaar! 🏆</p>
-
-                    <p>Maar er is meer... Het A-team en de PromoCo onthullen deze avond namelijk zowel het thema van het
-                        Eindfeest als het thema van de OWee! 🎊🎈 Dubbel feest en dubbel zoveel reden om erbij te zijn.
-                        Vergeet ook niet direct 27 juni in je agenda te blokken, want dan knallen we het jaar uit
-                        tijdens het Eindfeest. 🗓️</p>
-
-                    <p>We zien jullie om 21:00 uur @Kurk. Zet je speurneus op en zorg dat je deze onthullingen niet
-                        mist! 🔍</p>
-
-                    <p>Liefs,
-                        Het A-team💚</p>
-                    </p>
                 </div>
-            </div>
+            </x-ui.card>
         </div>
     </div>
 </x-layouts.app.header>

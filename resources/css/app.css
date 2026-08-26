@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import '../../vendor/livewire/flux/dist/flux.css';
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&display=swap');
 
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
@@ -10,6 +11,7 @@
 
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-display: 'Baloo 2', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
 
     --color-zinc-50: #fafafa;
     --color-zinc-100: #f5f5f5;
@@ -23,16 +25,24 @@
     --color-zinc-900: #171717;
     --color-zinc-950: #0a0a0a;
 
-    --color-accent: var(--color-neutral-800);
-    --color-accent-content: var(--color-neutral-800);
+    /* S.H.C. Scoop Delft brand palette, sampled from the club shield + poster material */
+    --color-brand-green: #2f9e52;
+    --color-brand-green-light: #3dbd65;
+    --color-brand-green-dark: #1f7a3d;
+    --color-brand-cream: #f7f2e2;
+    --color-brand-periwinkle: #7b86c4;
+    --color-brand-navy: #1c2541;
+
+    --color-accent: var(--color-brand-green);
+    --color-accent-content: var(--color-brand-green-dark);
     --color-accent-foreground: var(--color-white);
 }
 
 @layer theme {
     .dark {
-        --color-accent: var(--color-white);
-        --color-accent-content: var(--color-white);
-        --color-accent-foreground: var(--color-neutral-800);
+        --color-accent: var(--color-brand-green-light);
+        --color-accent-content: var(--color-brand-green-light);
+        --color-accent-foreground: var(--color-zinc-950);
     }
 }
 
@@ -88,7 +98,9 @@ select:focus[data-flux-control] {
   /* Ensure dropdown options are legible in dark mode */
   .dark select option { @apply bg-zinc-800 text-zinc-100; }
 
-  /* Make schedule distribution segments more visible */
-  .timeline-bar { @apply relative h-3 w-full rounded overflow-hidden bg-green-500/30 dark:bg-green-600/30 border border-zinc-200 dark:border-zinc-700; }
-  .timeline-seg { @apply absolute top-0 h-full bg-red-500 dark:bg-red-600; min-width: 2px; }
+  /* Schedule-matrix cell states, shared by the generate/view schedule pages */
+  .schedule-cell-busy { @apply h-4 w-full rounded-sm bg-red-500 dark:bg-red-600; }
+  .schedule-cell-free { @apply h-4 w-full rounded-sm bg-green-500/40 dark:bg-green-600/40; }
+  .schedule-cell-warn { @apply ring-2 ring-amber-500; }
+  .schedule-cell-alert { @apply ring-2 ring-orange-500; }
 }

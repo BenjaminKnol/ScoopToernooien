@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Player;
+use App\Models\Team;
 use App\Models\User;
 use Dflydev\DotAccessData\Data;
 use Illuminate\Http\Request;
@@ -13,7 +14,10 @@ class PlayerController extends Controller
 {
     public function index()
     {
-        return Player::all();
+        return view('players.index', [
+            'players' => Player::with(['team', 'user'])->orderByRaw('team_id IS NOT NULL')->get(),
+            'teams' => Team::all(),
+        ]);
     }
 
     public function store(Request $request)
@@ -42,7 +46,7 @@ class PlayerController extends Controller
         }
         $data['user_id'] = $user->id;
         $player = Player::create($data);
-        return redirect()->route('dashboard')->with('success', __('Player created successfully.'));
+        return redirect()->route('players.index')->with('success', __('Player created successfully.'));
     }
 
     public function show(Player $player)

@@ -11,16 +11,11 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $teams = Team::all();
-        $games = Game::all();
-        $players = Player::with(['team','user'])->orderByRaw('team_id IS NOT NULL')->get();
-        $conflicts = Game::where('status', 'conflict')->get();
-
         return view('dashboard', [
-            'teams' => $teams,
-            'games' => $games,
-            'players' => $players,
-            'conflicts' => $conflicts,
+            'teamsCount' => Team::count(),
+            'gamesCount' => Game::count(),
+            'playersCount' => Player::count(),
+            'conflictsCount' => Game::where('status', 'conflict')->count(),
         ]);
     }
 }

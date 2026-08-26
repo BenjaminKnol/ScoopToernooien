@@ -1,0 +1,35 @@
+{
+    "permissions": {
+        "deny": [
+            "Read(./.env)",
+            "Read(./.env.*)",
+            "Read(/config/**)",
+            "Read(/bootstrap/**)",
+            "Write(/config/**)",
+            "Write(/bootstrap/**)",
+            "Write(./composer.json)",
+            "Write(./composer.lock)",
+            "Bash(php artisan migrate*)",
+            "Bash(composer*)"
+        ],
+        "allow": [
+            "Read(./resources/**)",
+            "Write(./resources/**)",
+            "Read(./public/**)",
+            "Write(./tailwind.config.js)",
+            "Write(./vite.config.js)",
+            "Read(./*.blade.php)",
+            "Read(/routes/web.php)",
+            "Write(/routes/web.php)",
+            "Read(/app/Http/Controllers/**)",
+            "Write(/app/Http/Controllers/**)",
+            "Read(/app/Models/**)",
+            "Write(/app/Models/**)",
+            "Read(/database/**)",
+            "Write(/database/**)",
+            "Bash(npm run dev*)",
+            "Bash(npm run build*)",
+            "Bash(./vendor/bin/sail npm*)"
+        ]
+    }
+}

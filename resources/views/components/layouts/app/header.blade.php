@@ -3,7 +3,7 @@
     <head>
         @include('partials.head')
     </head>
-    <body class="min-h-screen bg-white dark:bg-zinc-800">
+    <body class="min-h-dvh bg-(--color-brand-cream) dark:bg-zinc-800">
         <flux:header container class="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.toggle class="lg:hidden" icon="bars-2" inset="left" />
 
@@ -16,9 +16,15 @@
                     {{ __('Leaderboard') }}
                 </flux:navbar.item>
                 @auth
-                <flux:navbar.item icon="user-group" :href="route('my-team')" :current="request()->routeIs('my-team')" wire:navigate>
-                    {{ __('My Team') }}
-                </flux:navbar.item>
+                    @if(auth()->user()->is_admin)
+                        <flux:navbar.item icon="shield-check" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                            {{ __('Admin') }}
+                        </flux:navbar.item>
+                    @else
+                        <flux:navbar.item icon="user-group" :href="route('my-team')" :current="request()->routeIs('my-team')" wire:navigate>
+                            {{ __('My Team') }}
+                        </flux:navbar.item>
+                    @endif
                 @endauth
             </flux:navbar>
 
@@ -57,7 +63,11 @@
                 <flux:menu>
 
                     <flux:menu.radio.group>
-                        <flux:menu.item :href="route('my-team')" icon="user-group" wire:navigate>{{ __('My Team') }}</flux:menu.item>
+                        @if(auth()->user()->is_admin)
+                            <flux:menu.item :href="route('dashboard')" icon="shield-check" wire:navigate>{{ __('Admin') }}</flux:menu.item>
+                        @else
+                            <flux:menu.item :href="route('my-team')" icon="user-group" wire:navigate>{{ __('My Team') }}</flux:menu.item>
+                        @endif
                         <flux:menu.item :href="route('settings.profile')" icon="cog" wire:navigate>{{ __('Settings') }}</flux:menu.item>
                     </flux:menu.radio.group>
 
@@ -94,9 +104,15 @@
                         {{ __('Leaderboard') }}
                     </flux:navlist.item>
                     @auth
-                    <flux:navlist.item icon="user-group" :href="route('my-team')" :current="request()->routeIs('my-team')" wire:navigate>
-                        {{ __('My Team') }}
-                    </flux:navlist.item>
+                        @if(auth()->user()->is_admin)
+                            <flux:navlist.item icon="shield-check" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                                {{ __('Admin') }}
+                            </flux:navlist.item>
+                        @else
+                            <flux:navlist.item icon="user-group" :href="route('my-team')" :current="request()->routeIs('my-team')" wire:navigate>
+                                {{ __('My Team') }}
+                            </flux:navlist.item>
+                        @endif
                     @endauth
                 </flux:navlist.group>
             </flux:navlist>

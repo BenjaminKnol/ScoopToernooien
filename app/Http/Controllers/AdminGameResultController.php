@@ -12,11 +12,12 @@ class AdminGameResultController extends Controller
     public function approve(Request $request, Game $game): RedirectResponse
     {
         // Only admins via middleware in routes, but double-check if needed
-        $request->validate([
-            'score' => ['required','regex:/^\d+-\d+$/'],
+        $data = $request->validate([
+            'team_1_score' => ['required', 'integer', 'min:0'],
+            'team_2_score' => ['required', 'integer', 'min:0'],
         ]);
 
-        $score = $request->string('score');
+        $score = "{$data['team_1_score']}-{$data['team_2_score']}";
 
         // If points already applied for a previously accepted outcome, revert first
         if ($game->points_applied) {

@@ -49,16 +49,16 @@ class GameResultApprovalTest extends TestCase
         $user = $this->createPlayerUser($team1);
 
         $this->actingAs($user)
-            ->post(route('team.games.report', $game), ['score' => '1 - 2'])
-            ->assertSessionHasErrors('score');
+            ->post(route('team.games.report', $game), [])
+            ->assertSessionHasErrors(['team_1_score', 'team_2_score']);
 
         $this->actingAs($user)
-            ->post(route('team.games.report', $game), ['score' => 'a-b'])
-            ->assertSessionHasErrors('score');
+            ->post(route('team.games.report', $game), ['team_1_score' => 'a', 'team_2_score' => 'b'])
+            ->assertSessionHasErrors(['team_1_score', 'team_2_score']);
 
         $this->actingAs($user)
-            ->post(route('team.games.report', $game), ['score' => '1-2-3'])
-            ->assertSessionHasErrors('score');
+            ->post(route('team.games.report', $game), ['team_1_score' => -1, 'team_2_score' => 2])
+            ->assertSessionHasErrors('team_1_score');
     }
 
     public function test_matching_submissions_are_auto_accepted(): void
@@ -67,14 +67,14 @@ class GameResultApprovalTest extends TestCase
         $u1 = $this->createPlayerUser($team1);
         $u2 = $this->createPlayerUser($team2);
 
-        $this->actingAs($u1)->post(route('team.games.report', $game), ['score' => '2-1'])
+        $this->actingAs($u1)->post(route('team.games.report', $game), ['team_1_score' => 2, 'team_2_score' => 1])
             ->assertSessionHas('success');
         $game->refresh();
         $this->assertSame('pending', $game->status);
         $this->assertSame('2-1', $game->team_1_submission);
         $this->assertNull($game->accepted_outcome);
 
-        $this->actingAs($u2)->post(route('team.games.report', $game), ['score' => '2-1'])
+        $this->actingAs($u2)->post(route('team.games.report', $game), ['team_1_score' => 2, 'team_2_score' => 1])
             ->assertSessionHas('success');
         $game->refresh();
         $this->assertSame('accepted', $game->status);
@@ -92,8 +92,8 @@ class GameResultApprovalTest extends TestCase
         $u1 = $this->createPlayerUser($team1);
         $u2 = $this->createPlayerUser($team2);
 
-        $this->actingAs($u1)->post(route('team.games.report', $game), ['score' => '0-0']);
-        $this->actingAs($u2)->post(route('team.games.report', $game), ['score' => '1-0']);
+        $this->actingAs($u1)->post(route('team.games.report', $game), ['team_1_score' => 0, 'team_2_score' => 0]);
+        $this->actingAs($u2)->post(route('team.games.report', $game), ['team_1_score' => 1, 'team_2_score' => 0]);
         $game->refresh();
         $this->assertSame('conflict', $game->status);
         $this->assertNull($game->accepted_outcome);
@@ -102,7 +102,7 @@ class GameResultApprovalTest extends TestCase
         // Admin approves one score (override)
         $admin = User::factory()->create(['is_admin' => true]);
         $this->actingAs($admin)
-            ->post(route('admin.games.approve', $game), ['score' => '1-0'])
+            ->post(route('admin.games.approve', $game), ['team_1_score' => 1, 'team_2_score' => 0])
             ->assertSessionHas('success');
 
         $game->refresh();
@@ -120,8 +120,8 @@ class GameResultApprovalTest extends TestCase
         $u2 = $this->createPlayerUser($team2);
 
         // Auto-accept via two matching submissions
-        $this->actingAs($u1)->post(route('team.games.report', $game), ['score' => '1-1']);
-        $this->actingAs($u2)->post(route('team.games.report', $game), ['score' => '1-1']);
+        $this->actingAs($u1)->post(route('team.games.report', $game), ['team_1_score' => 1, 'team_2_score' => 1]);
+        $this->actingAs($u2)->post(route('team.games.report', $game), ['team_1_score' => 1, 'team_2_score' => 1]);
         $game->refresh();
         $this->assertSame('accepted', $game->status);
         $this->assertSame(1, $team1->fresh()->points);
@@ -129,13 +129,13 @@ class GameResultApprovalTest extends TestCase
 
         // Non-admin attempt (expect redirect by middleware to home)
         $this->actingAs($u1)
-            ->post(route('admin.games.approve', $game), ['score' => '2-1'])
+            ->post(route('admin.games.approve', $game), ['team_1_score' => 2, 'team_2_score' => 1])
             ->assertRedirect(route('home'));
 
         // Admin overrides: revert draw points and apply win points
         $admin = User::factory()->create(['is_admin' => true]);
         $this->actingAs($admin)
-            ->post(route('admin.games.approve', $game), ['score' => '2-1'])
+            ->post(route('admin.games.approve', $game), ['team_1_score' => 2, 'team_2_score' => 1])
             ->assertSessionHas('success');
 
         $game->refresh();

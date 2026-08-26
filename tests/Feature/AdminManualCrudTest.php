@@ -27,7 +27,7 @@ class AdminManualCrudTest extends TestCase
                 'name' => 'Tigers',
                 'points' => 0,
                 'costume_rating' => 5,
-            ])->assertRedirect(route('dashboard'));
+            ])->assertRedirect(route('teams.index'));
 
         $this->assertDatabaseHas('teams', ['name' => 'Tigers', 'costume_rating' => 5]);
     }
@@ -46,19 +46,19 @@ class AdminManualCrudTest extends TestCase
             'team_2_id' => $t2->id,
             'field' => 1,
         ]);
-        $resp->assertRedirect('dashboard');
+        $resp->assertRedirect(route('games.index'));
         $game = Game::first();
         $this->assertNotNull($game);
 
         // Update
         $this->actingAs($admin)->put(route('games.update', $game), [
             'field' => 2,
-        ])->assertRedirect('dashboard');
+        ])->assertRedirect(route('games.index'));
         $this->assertEquals(2, $game->fresh()->field);
 
         // Delete
         $this->actingAs($admin)->delete(route('games.destroy', $game))
-            ->assertRedirect('dashboard');
+            ->assertRedirect(route('games.index'));
         $this->assertDatabaseMissing('games', ['id' => $game->id]);
     }
 

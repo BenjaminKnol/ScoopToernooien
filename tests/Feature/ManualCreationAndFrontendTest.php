@@ -27,7 +27,7 @@ class ManualCreationAndFrontendTest extends TestCase
             'gender' => 'D',
             'team_code' => 'D1',
         ]);
-        $resp->assertRedirect(route('dashboard'));
+        $resp->assertRedirect(route('players.index'));
 
         $this->assertDatabaseHas('players', [
             'firstName' => 'Jane',
@@ -42,7 +42,7 @@ class ManualCreationAndFrontendTest extends TestCase
         ]);
     }
 
-    public function test_my_team_page_contains_strict_score_input_pattern(): void
+    public function test_my_team_page_contains_score_inputs_for_reporting(): void
     {
         $team = Team::create(['name' => 'Sharks']);
         $team2 = Team::create(['name' => 'Dolphins']);
@@ -66,10 +66,11 @@ class ManualCreationAndFrontendTest extends TestCase
             ->get(route('my-team'))
             ->assertOk()
             ->assertSee('Report result')
-            ->assertSeeHtml('[1-9]\d*-[1-9]\d*');
+            ->assertSeeHtml('name="team_1_score"')
+            ->assertSeeHtml('name="team_2_score"');
     }
 
-    public function test_admin_dashboard_shows_manual_creation_forms(): void
+    public function test_admin_dashboard_shows_overview_and_links_to_management_pages(): void
     {
         $admin = User::factory()->create(['is_admin' => true]);
         Team::create(['name' => 'A']);
@@ -78,10 +79,25 @@ class ManualCreationAndFrontendTest extends TestCase
             ->get(route('dashboard'))
             ->assertOk()
             ->assertSee('Games')
-            ->assertSee('Create Game')
             ->assertSee('Teams')
-            ->assertSee('Create Team')
             ->assertSee('Players')
+            ->assertSee(route('teams.index'), false)
+            ->assertSee(route('games.index'), false)
+            ->assertSee(route('players.index'), false);
+
+        $this->actingAs($admin)
+            ->get(route('teams.index'))
+            ->assertOk()
+            ->assertSee('Create Team');
+
+        $this->actingAs($admin)
+            ->get(route('games.index'))
+            ->assertOk()
+            ->assertSee('Create Game');
+
+        $this->actingAs($admin)
+            ->get(route('players.index'))
+            ->assertOk()
             ->assertSee('Manual player creation');
     }
 }
